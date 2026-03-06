@@ -4,6 +4,7 @@ let userRole = null;
 let deliveryMethod = null;
 let deliveryLocation = null;
 let currentRating = 0;
+let currentCoffeeItem = null;
 
 // Admin credentials
 const admins = [
@@ -14,231 +15,78 @@ const admins = [
 
 let currentAdmin = null;
 
-// Size selection variables
-let currentCoffeeName = '';
-let currentCoffeeType = '';
-let currentSizes = [];
-
 // Check if first time visitor
-document.addEventListener('DOMContentLoaded', function() {
+window.onload = function() {
+    if (!localStorage.getItem('hasVisited')) {
+        document.getElementById('role-popup').style.display = 'flex';
+    }
+    
     const savedRole = localStorage.getItem('userRole');
     if (savedRole) {
         userRole = savedRole;
     }
-    
-    // Show role popup for first time visitors
-    if (!localStorage.getItem('hasVisited')) {
-        setTimeout(() => {
-            const popup = document.getElementById('role-popup');
-            if (popup) popup.style.display = 'flex';
-        }, 500);
-    }
-    
-    // Initialize all event listeners
-    initializeEventListeners();
-});
+};
 
-function initializeEventListeners() {
-    // Add click handlers to coffee items
-    document.querySelectorAll('.coffee-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            // Don't trigger if clicking the button
-            if (e.target.closest('.add-btn')) return;
-            
-            // Get data from the clicked item
-            const name = this.querySelector('.coffee-details h5')?.textContent;
-            const priceText = this.querySelector('.price')?.textContent;
-            const price = parseFloat(priceText?.replace('P', '').trim() || '0');
-            
-            // Determine type from name
-            let type = 'regular';
-            if (name?.includes('Latte') && !name?.includes('Chai')) type = 'latte';
-            else if (name?.includes('Milo')) type = 'milo';
-            else if (name?.includes('Milkshake')) type = 'milkshake';
-            else if (name?.includes('Single Espresso')) type = 'single';
-            else if (name?.includes('Double Espresso')) type = 'double';
-            
-            showSizeOptions(name, price, type);
-        });
-    });
-    
-    // Add location summary update to all relevant fields
-    const locationFields = [
-        'campus-select', 'main-location', 'new-location', 'lab-number',
-        'academic-block-letter', 'academic-room', 'lecture-theatre',
-        'lecture-room', 'office-number', 'new-block-room', 'other-location'
-    ];
-    
-    locationFields.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', updateLocationSummary);
-            el.addEventListener('keyup', updateLocationSummary);
-        }
-    });
-}
-
-// Category toggle function
+// Category toggle
 function toggleCategory(categoryId) {
     const category = document.getElementById(categoryId);
-    const header = event.currentTarget;
-    const toggle = header.querySelector('.category-toggle');
+    const toggle = event.currentTarget.querySelector('.category-toggle');
     
-    if (category && toggle) {
-        category.classList.toggle('collapsed');
-        if (category.classList.contains('collapsed')) {
-            toggle.style.transform = 'rotate(-90deg)';
-        } else {
-            toggle.style.transform = 'rotate(0deg)';
-        }
+    if (category.classList.contains('collapsed')) {
+        category.classList.remove('collapsed');
+        toggle.style.transform = 'rotate(0deg)';
+    } else {
+        category.classList.add('collapsed');
+        toggle.style.transform = 'rotate(-90deg)';
     }
 }
 
-// Size selection functions
-function showSizeOptions(name, price, type) {
+// Size popup
+function showSizePopup(button) {
     if (!userRole) {
         document.getElementById('role-popup').style.display = 'flex';
         return;
     }
     
+    const coffeeItem = button.closest('.coffee-item');
+    const name = coffeeItem.dataset.name;
+    const price = parseFloat(coffeeItem.dataset.price);
+    const type = coffeeItem.dataset.type;
+    
+    currentCoffeeItem = { name, price, type };
+    
     const popup = document.getElementById('size-popup');
     const title = document.getElementById('size-popup-title');
-    const dropdown = document.getElementById('size-dropdown');
-    const priceDisplay = document.getElementById('selected-size-price');
-    const addBtn = document.getElementById('add-size-btn');
-    
-    if (!popup || !title || !dropdown || !priceDisplay || !addBtn) return;
-    
-    currentCoffeeName = name;
-    currentCoffeeType = type;
+    const options = document.getElementById('size-options');
     
     title.textContent = `Select Size - ${name}`;
+    options.innerHTML = '';
     
-    // Clear dropdown
-    dropdown.innerHTML = '<option value="">-- Select Size --</option>';
-    
-    // Define sizes based on coffee type
     if (type === 'latte') {
-        currentSizes = [
-            { size: 'Short (Small)', price: 18.00 },
-            { size: 'Tall (Large)', price: 23.00 }
-        ];
+        options.innerHTML = `
+            <button class="size-btn" onclick="addToOrder('Cafe Latte (Short)', 18.00)">Short (Small) - P 18.00</button>
+            <button class="size-btn" onclick="addToOrder('Cafe Latte (Tall)', 23.00)">Tall (Large) - P 23.00</button>
+        `;
     } else if (type === 'milo') {
-        currentSizes = [
-            { size: 'Short (Small)', price: 23.00 },
-            { size: 'Tall (Large)', price: 27.00 }
-        ];
+        options.innerHTML = `
+            <button class="size-btn" onclick="addToOrder('Milo (Short)', 23.00)">Short (Small) - P 23.00</button>
+            <button class="size-btn" onclick="addToOrder('Milo (Tall)', 27.00)">Tall (Large) - P 27.00</button>
+        `;
     } else if (type === 'milkshake') {
-        currentSizes = [
-            { size: 'Regular', price: 26.00 }
-        ];
-    } else if (type === 'single') {
-        currentSizes = [
-            { size: 'Single Espresso', price: 15.00 }
-        ];
-    } else if (type === 'double') {
-        currentSizes = [
-            { size: 'Double Espresso', price: 18.00 }
-        ];
+        options.innerHTML = `
+            <button class="size-btn" onclick="addToOrder('${name}', 26.00)">Regular - P 26.00</button>
+        `;
     } else {
-        currentSizes = [
-            { size: 'Regular', price: price }
-        ];
+        options.innerHTML = `
+            <button class="size-btn" onclick="addToOrder('${name}', ${price})">Regular - P ${price.toFixed(2)}</button>
+        `;
     }
-    
-    // Populate dropdown
-    currentSizes.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item.price;
-        option.textContent = `${item.size} - P ${item.price.toFixed(2)}`;
-        dropdown.appendChild(option);
-    });
-    
-    // Reset display
-    priceDisplay.textContent = 'P 0.00';
-    addBtn.disabled = true;
     
     popup.style.display = 'flex';
 }
 
-function showLatteOptions() {
-    if (!userRole) {
-        document.getElementById('role-popup').style.display = 'flex';
-        return;
-    }
-    showSizeOptions('Cafe Latte', 0, 'latte');
-}
-
-function showMiloOptions() {
-    if (!userRole) {
-        document.getElementById('role-popup').style.display = 'flex';
-        return;
-    }
-    showSizeOptions('Milo', 0, 'milo');
-}
-
-function showMilkshakeOptions(flavor) {
-    if (!userRole) {
-        document.getElementById('role-popup').style.display = 'flex';
-        return;
-    }
-    showSizeOptions(flavor, 26.00, 'milkshake');
-}
-
-function updateSizePrice() {
-    const dropdown = document.getElementById('size-dropdown');
-    const priceDisplay = document.getElementById('selected-size-price');
-    const addBtn = document.getElementById('add-size-btn');
-    
-    if (!dropdown || !priceDisplay || !addBtn) return;
-    
-    const selectedPrice = dropdown.value;
-    
-    if (selectedPrice) {
-        priceDisplay.textContent = `P ${parseFloat(selectedPrice).toFixed(2)}`;
-        addBtn.disabled = false;
-    } else {
-        priceDisplay.textContent = 'P 0.00';
-        addBtn.disabled = true;
-    }
-}
-
-function addToOrderWithSize() {
-    const dropdown = document.getElementById('size-dropdown');
-    if (!dropdown) return;
-    
-    const selectedIndex = dropdown.selectedIndex;
-    const selectedPrice = parseFloat(dropdown.value);
-    
-    if (!selectedPrice) {
-        alert('Please select a size');
-        return;
-    }
-    
-    // Get the selected size text
-    const selectedOption = dropdown.options[selectedIndex];
-    const sizeText = selectedOption.text.split(' - ')[0];
-    
-    // Construct full coffee name with size
-    let coffeeName = '';
-    
-    if (currentCoffeeType === 'latte') {
-        coffeeName = `Cafe Latte (${sizeText})`;
-    } else if (currentCoffeeType === 'milo') {
-        coffeeName = `Milo (${sizeText})`;
-    } else if (currentCoffeeType === 'milkshake') {
-        coffeeName = `${currentCoffeeName} Milkshake`;
-    } else {
-        coffeeName = currentCoffeeName;
-    }
-    
-    // Add to order
-    addToOrder(coffeeName, selectedPrice);
-}
-
 function closeSizePopup() {
-    const popup = document.getElementById('size-popup');
-    if (popup) popup.style.display = 'none';
+    document.getElementById('size-popup').style.display = 'none';
 }
 
 // Role selection
@@ -246,22 +94,13 @@ function selectRole(role) {
     userRole = role;
     localStorage.setItem('userRole', role);
     localStorage.setItem('hasVisited', 'true');
-    
-    const popup = document.getElementById('role-popup');
-    if (popup) popup.style.display = 'none';
-    
+    document.getElementById('role-popup').style.display = 'none';
     updateOrderDisplay();
-    showNotification(`Welcome ${role}!`);
+    alert(`Welcome ${role}!`);
 }
 
 // Add to order
 function addToOrder(name, price) {
-    if (!userRole) {
-        document.getElementById('role-popup').style.display = 'flex';
-        closeSizePopup();
-        return;
-    }
-    
     const existingItem = order.find(item => item.name === name);
     if (existingItem) {
         existingItem.quantity++;
@@ -275,34 +114,8 @@ function addToOrder(name, price) {
     
     closeSizePopup();
     updateOrderDisplay();
-    
-    const checkoutBtn = document.getElementById('checkout-btn');
-    if (checkoutBtn) checkoutBtn.disabled = false;
-    
-    // Show confirmation message
-    showNotification(`${name} added to order!`);
-}
-
-// Show notification
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.innerHTML = `
-        <i class="fas fa-check-circle"></i>
-        <span>${message}</span>
-    `;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
-    
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }, 2000);
+    document.getElementById('checkout-btn').disabled = false;
+    alert(`${name} added to order!`);
 }
 
 // Update quantity
@@ -315,25 +128,19 @@ function updateQuantity(name, change) {
         }
     }
     updateOrderDisplay();
-    
-    const checkoutBtn = document.getElementById('checkout-btn');
-    if (checkoutBtn) checkoutBtn.disabled = order.length === 0;
+    document.getElementById('checkout-btn').disabled = order.length === 0;
 }
 
 // Remove item
 function removeItem(name) {
     order = order.filter(item => item.name !== name);
     updateOrderDisplay();
-    
-    const checkoutBtn = document.getElementById('checkout-btn');
-    if (checkoutBtn) checkoutBtn.disabled = order.length === 0;
+    document.getElementById('checkout-btn').disabled = order.length === 0;
 }
 
 // Update order display
 function updateOrderDisplay() {
     const orderItemsDiv = document.getElementById('order-items');
-    if (!orderItemsDiv) return;
-    
     orderItemsDiv.innerHTML = '';
     
     let subtotal = 0;
@@ -352,14 +159,14 @@ function updateOrderDisplay() {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'order-item';
         itemDiv.innerHTML = `
-            <span class="item-name">${item.name}</span>
-            <div class="order-item-controls">
-                <button onclick="updateQuantity('${item.name.replace(/'/g, "\\'")}', -1)">-</button>
+            <span>${item.name}</span>
+            <div>
+                <button onclick="updateQuantity('${item.name}', -1)">-</button>
                 <span>${item.quantity}</span>
-                <button onclick="updateQuantity('${item.name.replace(/'/g, "\\'")}', 1)">+</button>
-                <button class="remove-btn" onclick="removeItem('${item.name.replace(/'/g, "\\'")}')">×</button>
+                <button onclick="updateQuantity('${item.name}', 1)">+</button>
+                <button onclick="removeItem('${item.name}')" style="background:#dc3545; color:white;">×</button>
             </div>
-            <span class="item-price">P ${(item.price * item.quantity).toFixed(2)}</span>
+            <span>P ${(item.price * item.quantity).toFixed(2)}</span>
         `;
         orderItemsDiv.appendChild(itemDiv);
     });
@@ -375,329 +182,100 @@ function updateOrderDisplay() {
 // Checkout
 function checkout() {
     if (order.length === 0) {
-        showNotification('Your order is empty!');
+        alert('Your order is empty!');
         return;
     }
-    
-    const popup = document.getElementById('delivery-popup');
-    if (popup) popup.style.display = 'flex';
+    document.getElementById('delivery-popup').style.display = 'flex';
 }
 
 // Delivery selection
 function selectDelivery(method) {
     deliveryMethod = method;
-    
-    const deliveryPopup = document.getElementById('delivery-popup');
-    if (deliveryPopup) deliveryPopup.style.display = 'none';
+    document.getElementById('delivery-popup').style.display = 'none';
     
     if (method === 'collect') {
-        // For collection, no location needed
-        deliveryLocation = 'Collection (counter pick-up)';
+        deliveryLocation = 'Collection';
         completeOrder();
-    } else if (method === 'delivery') {
-        // For delivery, show location popup
-        const locationPopup = document.getElementById('location-popup');
-        if (locationPopup) locationPopup.style.display = 'flex';
+    } else {
+        document.getElementById('location-popup').style.display = 'flex';
     }
 }
 
-// Show delivery location
 function showDeliveryLocation() {
-    const deliveryPopup = document.getElementById('delivery-popup');
-    if (deliveryPopup) deliveryPopup.style.display = 'none';
-    
-    const locationPopup = document.getElementById('location-popup');
-    if (locationPopup) locationPopup.style.display = 'flex';
+    document.getElementById('delivery-popup').style.display = 'none';
+    document.getElementById('location-popup').style.display = 'flex';
 }
 
-// Campus location functions
+// Location functions
 function updateCampusLocation() {
-    const campus = document.getElementById('campus-select');
-    if (!campus) return;
+    const campus = document.getElementById('campus-select').value;
     
-    const selectedCampus = campus.value;
+    document.getElementById('main-campus-locations').style.display = 'none';
+    document.getElementById('new-campus-locations').style.display = 'none';
+    document.getElementById('lab-numbers').style.display = 'none';
+    document.getElementById('academic-block-select').style.display = 'none';
+    document.getElementById('lecture-theatre-details').style.display = 'none';
+    document.getElementById('office-details').style.display = 'none';
+    document.getElementById('new-block-details').style.display = 'none';
     
-    // Hide all sections
-    document.getElementById('main-campus-locations')?.style.display = 'none';
-    document.getElementById('new-campus-locations')?.style.display = 'none';
-    document.getElementById('lab-numbers')?.style.display = 'none';
-    document.getElementById('academic-block-select')?.style.display = 'none';
-    document.getElementById('lecture-theatre-details')?.style.display = 'none';
-    document.getElementById('office-details')?.style.display = 'none';
-    document.getElementById('new-block-details')?.style.display = 'none';
-    document.getElementById('academic-room-field')?.style.display = 'none';
-    document.getElementById('lecture-room-field')?.style.display = 'none';
-    
-    // Reset all fields
-    resetLocationFields();
-    
-    // Show appropriate campus locations
-    if (selectedCampus === 'main') {
+    if (campus === 'main') {
         document.getElementById('main-campus-locations').style.display = 'block';
-    } else if (selectedCampus === 'new') {
+    } else if (campus === 'new') {
         document.getElementById('new-campus-locations').style.display = 'block';
     }
 }
 
-function resetLocationFields() {
-    // Reset all select and input fields
-    const selects = [
-        'main-location', 'new-location', 'lab-number', 'academic-block-letter',
-        'lecture-theatre', 'academic-room', 'lecture-room', 'office-number',
-        'new-block-room', 'other-location'
-    ];
-    
-    selects.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            if (el.tagName === 'SELECT') {
-                el.value = '';
-            } else {
-                el.value = '';
-            }
-        }
-    });
-}
-
 function updateMainLocationDetails() {
-    const location = document.getElementById('main-location');
-    if (!location) return;
+    const location = document.getElementById('main-location').value;
     
-    const selectedLocation = location.value;
+    document.getElementById('lab-numbers').style.display = 'none';
+    document.getElementById('academic-block-select').style.display = 'none';
+    document.getElementById('lecture-theatre-details').style.display = 'none';
+    document.getElementById('office-details').style.display = 'none';
     
-    // Hide all detail sections
-    document.getElementById('lab-numbers')?.style.display = 'none';
-    document.getElementById('academic-block-select')?.style.display = 'none';
-    document.getElementById('lecture-theatre-details')?.style.display = 'none';
-    document.getElementById('office-details')?.style.display = 'none';
-    document.getElementById('academic-room-field')?.style.display = 'none';
-    document.getElementById('lecture-room-field')?.style.display = 'none';
-    
-    // Reset relevant fields
-    const labNumber = document.getElementById('lab-number');
-    if (labNumber) labNumber.value = '';
-    
-    const academicBlock = document.getElementById('academic-block-letter');
-    if (academicBlock) academicBlock.value = '';
-    
-    const academicRoom = document.getElementById('academic-room');
-    if (academicRoom) academicRoom.value = '';
-    
-    const lectureTheatre = document.getElementById('lecture-theatre');
-    if (lectureTheatre) lectureTheatre.value = '';
-    
-    const lectureRoom = document.getElementById('lecture-room');
-    if (lectureRoom) lectureRoom.value = '';
-    
-    const officeNumber = document.getElementById('office-number');
-    if (officeNumber) officeNumber.value = '';
-    
-    if (selectedLocation === 'labs') {
+    if (location === 'labs') {
         document.getElementById('lab-numbers').style.display = 'block';
-    } else if (selectedLocation === 'academic-blocks') {
+    } else if (location === 'academic-blocks') {
         document.getElementById('academic-block-select').style.display = 'block';
-    } else if (selectedLocation === 'lecture-theatre') {
+    } else if (location === 'lecture-theatre') {
         document.getElementById('lecture-theatre-details').style.display = 'block';
-    } else if (selectedLocation === 'offices') {
+    } else if (location === 'offices') {
         document.getElementById('office-details').style.display = 'block';
     }
 }
 
-function updateAcademicBlockRoom() {
-    const block = document.getElementById('academic-block-letter');
-    if (!block) return;
-    
-    const selectedBlock = block.value;
-    
-    if (selectedBlock) {
-        document.getElementById('academic-room-field').style.display = 'block';
-    } else {
-        document.getElementById('academic-room-field').style.display = 'none';
-        const academicRoom = document.getElementById('academic-room');
-        if (academicRoom) academicRoom.value = '';
-    }
-}
-
-function updateLectureTheatreRoom() {
-    const theatre = document.getElementById('lecture-theatre');
-    if (!theatre) return;
-    
-    const selectedTheatre = theatre.value;
-    
-    if (selectedTheatre) {
-        document.getElementById('lecture-room-field').style.display = 'block';
-    } else {
-        document.getElementById('lecture-room-field').style.display = 'none';
-        const lectureRoom = document.getElementById('lecture-room');
-        if (lectureRoom) lectureRoom.value = '';
-    }
-}
-
 function updateNewLocationDetails() {
-    const location = document.getElementById('new-location');
-    if (!location) return;
-    
-    const selectedLocation = location.value;
-    
-    document.getElementById('new-block-details').style.display = 'none';
-    
-    const newBlockRoom = document.getElementById('new-block-room');
-    if (newBlockRoom) newBlockRoom.value = '';
-    
-    if (selectedLocation === 'block-a' || selectedLocation === 'block-b') {
-        document.getElementById('new-block-details').style.display = 'block';
-    }
-}
-
-function updateLocationSummary() {
-    const summary = document.getElementById('location-summary');
-    const summaryText = document.getElementById('selected-location-text');
-    
-    if (!summary || !summaryText) return;
-    
-    const campus = document.getElementById('campus-select')?.value;
-    const mainLocation = document.getElementById('main-location')?.value;
-    const newLocation = document.getElementById('new-location')?.value;
-    const labNumber = document.getElementById('lab-number')?.value;
-    const academicBlock = document.getElementById('academic-block-letter')?.value;
-    const academicRoom = document.getElementById('academic-room')?.value;
-    const lectureTheatre = document.getElementById('lecture-theatre')?.value;
-    const lectureRoom = document.getElementById('lecture-room')?.value;
-    const officeNumber = document.getElementById('office-number')?.value;
-    const newBlockRoom = document.getElementById('new-block-room')?.value;
-    const otherLocation = document.getElementById('other-location')?.value;
-    
-    let locationString = '';
-    
-    if (otherLocation && otherLocation.trim() !== '') {
-        locationString = otherLocation.trim();
-    } else if (campus === 'main') {
-        if (mainLocation === 'reception') {
-            locationString = 'Main Campus - Reception';
-        } else if (mainLocation === 'cafeteria') {
-            locationString = 'Main Campus - Cafeteria';
-        } else if (mainLocation === 'labs' && labNumber) {
-            locationString = `Main Campus - Lab ${labNumber}`;
-        } else if (mainLocation === 'offices' && officeNumber) {
-            locationString = `Main Campus - Offices (${officeNumber})`;
-        } else if (mainLocation === 'lecture-theatre' && lectureTheatre) {
-            locationString = `Main Campus - ${lectureTheatre}`;
-            if (lectureRoom) locationString += ` (Room ${lectureRoom})`;
-        } else if (mainLocation === 'academic-blocks' && academicBlock) {
-            locationString = `Main Campus - Block ${academicBlock}`;
-            if (academicRoom) locationString += ` (Room ${academicRoom})`;
-        }
-    } else if (campus === 'new') {
-        if (newLocation === 'library') {
-            locationString = 'New Campus - Library';
-        } else if (newLocation === 'block-a' && newBlockRoom) {
-            locationString = `New Campus - Block A (Room ${newBlockRoom})`;
-        } else if (newLocation === 'block-b' && newBlockRoom) {
-            locationString = `New Campus - Block B (Room ${newBlockRoom})`;
-        }
-    }
-    
-    if (locationString) {
-        summaryText.textContent = locationString;
-        summary.style.display = 'block';
-    } else {
-        summary.style.display = 'none';
-    }
+    const location = document.getElementById('new-location').value;
+    document.getElementById('new-block-details').style.display = location === 'block-a' || location === 'block-b' ? 'block' : 'none';
 }
 
 // Confirm delivery
 function confirmDelivery() {
-    // Get all values
-    const campus = document.getElementById('campus-select')?.value;
-    const mainLocation = document.getElementById('main-location')?.value;
-    const newLocation = document.getElementById('new-location')?.value;
-    const labNumber = document.getElementById('lab-number')?.value;
-    const academicBlock = document.getElementById('academic-block-letter')?.value;
-    const academicRoom = document.getElementById('academic-room')?.value;
-    const lectureTheatre = document.getElementById('lecture-theatre')?.value;
-    const lectureRoom = document.getElementById('lecture-room')?.value;
-    const officeNumber = document.getElementById('office-number')?.value;
-    const newBlockRoom = document.getElementById('new-block-room')?.value;
-    const otherLocation = document.getElementById('other-location')?.value;
+    const campus = document.getElementById('campus-select').value;
+    const mainLocation = document.getElementById('main-location').value;
+    const newLocation = document.getElementById('new-location').value;
+    const labNumber = document.getElementById('lab-number').value;
+    const academicBlock = document.getElementById('academic-block-letter').value;
+    const lectureTheatre = document.getElementById('lecture-theatre').value;
+    const officeNumber = document.getElementById('office-number').value;
+    const newBlockRoom = document.getElementById('new-block-room').value;
+    const otherLocation = document.getElementById('other-location').value;
     
     let location = '';
     
-    // Check if other location is specified
-    if (otherLocation && otherLocation.trim() !== '') {
-        location = otherLocation.trim();
-    }
-    // Handle main campus
-    else if (campus === 'main') {
-        if (!mainLocation) {
-            alert('Please select a main campus location');
-            return;
-        }
-        
-        if (mainLocation === 'reception') {
-            location = 'Main Campus - Reception';
-        }
-        else if (mainLocation === 'cafeteria') {
-            location = 'Main Campus - Cafeteria';
-        }
-        else if (mainLocation === 'labs') {
-            if (!labNumber) {
-                alert('Please select a lab number');
-                return;
-            }
-            location = `Main Campus - Lab ${labNumber} (No eating/drinking)`;
-        }
-        else if (mainLocation === 'offices') {
-            if (!officeNumber) {
-                alert('Please enter office number');
-                return;
-            }
-            location = `Main Campus - Offices (${officeNumber})`;
-        }
-        else if (mainLocation === 'lecture-theatre') {
-            if (!lectureTheatre) {
-                alert('Please select a lecture theatre');
-                return;
-            }
-            location = `Main Campus - ${lectureTheatre}`;
-            if (lectureRoom) {
-                location += ` (Room ${lectureRoom})`;
-            }
-        }
-        else if (mainLocation === 'academic-blocks') {
-            if (!academicBlock) {
-                alert('Please select an academic block');
-                return;
-            }
-            location = `Main Campus - Block ${academicBlock}`;
-            if (academicRoom) {
-                location += ` (Room ${academicRoom})`;
-            }
-        }
-    }
-    // Handle new campus
-    else if (campus === 'new') {
-        if (!newLocation) {
-            alert('Please select a new campus location');
-            return;
-        }
-        
-        if (newLocation === 'library') {
-            location = 'New Campus - Library';
-        }
-        else if (newLocation === 'block-a') {
-            if (!newBlockRoom) {
-                alert('Please enter room number');
-                return;
-            }
-            location = `New Campus - Block A (Room ${newBlockRoom})`;
-        }
-        else if (newLocation === 'block-b') {
-            if (!newBlockRoom) {
-                alert('Please enter room number');
-                return;
-            }
-            location = `New Campus - Block B (Room ${newBlockRoom})`;
-        }
+    if (otherLocation) {
+        location = otherLocation;
+    } else if (campus === 'main') {
+        if (mainLocation === 'reception') location = 'Main Campus - Reception';
+        else if (mainLocation === 'cafeteria') location = 'Main Campus - Cafeteria';
+        else if (mainLocation === 'labs' && labNumber) location = `Main Campus - Lab ${labNumber}`;
+        else if (mainLocation === 'offices' && officeNumber) location = `Main Campus - Offices (${officeNumber})`;
+        else if (mainLocation === 'lecture-theatre' && lectureTheatre) location = `Main Campus - ${lectureTheatre}`;
+        else if (mainLocation === 'academic-blocks' && academicBlock) location = `Main Campus - Block ${academicBlock}`;
+    } else if (campus === 'new') {
+        if (newLocation === 'library') location = 'New Campus - Library';
+        else if (newLocation === 'block-a' && newBlockRoom) location = `New Campus - Block A (Room ${newBlockRoom})`;
+        else if (newLocation === 'block-b' && newBlockRoom) location = `New Campus - Block B (Room ${newBlockRoom})`;
     }
     
     if (!location) {
@@ -710,102 +288,74 @@ function confirmDelivery() {
     completeOrder();
 }
 
-// Close location popup
 function closeLocationPopup() {
-    const popup = document.getElementById('location-popup');
-    if (popup) popup.style.display = 'none';
+    document.getElementById('location-popup').style.display = 'none';
     
     // Reset all fields
-    resetLocationFields();
+    document.getElementById('campus-select').value = '';
+    document.getElementById('main-location').value = '';
+    document.getElementById('new-location').value = '';
+    document.getElementById('lab-number').value = '';
+    document.getElementById('academic-block-letter').value = '';
+    document.getElementById('lecture-theatre').value = '';
+    document.getElementById('office-number').value = '';
+    document.getElementById('new-block-room').value = '';
+    document.getElementById('other-location').value = '';
     
     // Hide all sections
-    const sections = [
-        'main-campus-locations', 'new-campus-locations', 'lab-numbers',
-        'academic-block-select', 'lecture-theatre-details', 'office-details',
-        'new-block-details', 'academic-room-field', 'lecture-room-field',
-        'location-summary'
-    ];
-    
-    sections.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-    
-    // Reset campus select
-    const campusSelect = document.getElementById('campus-select');
-    if (campusSelect) campusSelect.value = '';
+    document.getElementById('main-campus-locations').style.display = 'none';
+    document.getElementById('new-campus-locations').style.display = 'none';
+    document.getElementById('lab-numbers').style.display = 'none';
+    document.getElementById('academic-block-select').style.display = 'none';
+    document.getElementById('lecture-theatre-details').style.display = 'none';
+    document.getElementById('office-details').style.display = 'none';
+    document.getElementById('new-block-details').style.display = 'none';
 }
 
-// Complete order function
+// Complete order
 function completeOrder() {
-    const orderItems = [...order];
-    const subtotal = parseFloat(document.getElementById('subtotal').textContent);
-    const discount = parseFloat(document.getElementById('discount-amount').textContent);
-    const total = parseFloat(document.getElementById('total').textContent);
-    
     const orderData = {
         id: 'ORD' + Date.now(),
         timestamp: new Date().toISOString(),
-        items: orderItems,
-        subtotal: subtotal,
-        discount: discount,
-        total: total,
+        items: [...order],
+        subtotal: parseFloat(document.getElementById('subtotal').textContent),
+        discount: parseFloat(document.getElementById('discount-amount').textContent),
+        total: parseFloat(document.getElementById('total').textContent),
         role: userRole,
         deliveryMethod: deliveryMethod,
-        location: deliveryLocation || 'Collection (counter pick-up)',
+        location: deliveryLocation,
         status: 'pending'
     };
     
-    // Save to localStorage
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     orders.push(orderData);
     localStorage.setItem('orders', JSON.stringify(orders));
     
-    // Show confirmation
     const message = document.getElementById('confirmation-message');
-    const studentCallSection = document.getElementById('student-call-section');
-    const staffMessage = document.getElementById('staff-message');
+    message.innerHTML = `
+        <strong>Order #${orderData.id}</strong><br>
+        Thank you for ordering!<br>
+        ${deliveryMethod === 'collect' ? 'Please collect from counter' : 'Delivery to: ' + deliveryLocation}<br>
+        <strong>Total: P ${orderData.total.toFixed(2)}</strong>
+    `;
     
-    if (message) {
-        let deliveryText = '';
-        if (deliveryMethod === 'collect') {
-            deliveryText = 'Please collect your order from Mug Shots counter.';
-        } else {
-            deliveryText = `Your coffee will be delivered to: ${deliveryLocation}`;
-        }
-        
-        message.innerHTML = `
-            <strong>Order #${orderData.id}</strong><br>
-            Thank you for ordering from Mug Shots!<br>
-            ${deliveryText}<br>
-            <strong>Total: P ${total.toFixed(2)}</strong>
-        `;
-    }
-    
-    // Show different options based on user role
     if (userRole === 'student') {
-        if (studentCallSection) studentCallSection.style.display = 'block';
-        if (staffMessage) staffMessage.style.display = 'none';
+        document.getElementById('student-call-section').style.display = 'block';
+        document.getElementById('staff-message').style.display = 'none';
     } else {
-        if (studentCallSection) studentCallSection.style.display = 'none';
-        if (staffMessage) staffMessage.style.display = 'block';
+        document.getElementById('student-call-section').style.display = 'none';
+        document.getElementById('staff-message').style.display = 'block';
     }
     
-    const confirmationPopup = document.getElementById('confirmation-popup');
-    if (confirmationPopup) confirmationPopup.style.display = 'flex';
+    document.getElementById('confirmation-popup').style.display = 'flex';
     
-    // Clear order
     order = [];
     updateOrderDisplay();
+    document.getElementById('checkout-btn').disabled = true;
     
-    const checkoutBtn = document.getElementById('checkout-btn');
-    if (checkoutBtn) checkoutBtn.disabled = true;
-    
-    // Show rating popup after 30 seconds
     setTimeout(() => {
-        const ratingPopup = document.getElementById('rating-popup');
-        if (ratingPopup) ratingPopup.style.display = 'flex';
-    }, 30000);
+        document.getElementById('rating-popup').style.display = 'flex';
+    }, 5000);
 }
 
 // Rating functions
@@ -813,17 +363,9 @@ function setRating(rating) {
     currentRating = rating;
     const stars = document.querySelectorAll('.rating-stars span');
     stars.forEach((star, index) => {
-        if (index < rating) {
-            star.classList.add('active');
-        } else {
-            star.classList.remove('active');
-        }
+        star.style.color = index < rating ? '#ffc107' : '#ddd';
     });
-    
-    const selectedRating = document.getElementById('selected-rating');
-    if (selectedRating) {
-        selectedRating.textContent = `You rated: ${rating} star${rating > 1 ? 's' : ''}`;
-    }
+    document.getElementById('selected-rating').textContent = `You rated: ${rating} star${rating > 1 ? 's' : ''}`;
 }
 
 function submitRating() {
@@ -832,12 +374,10 @@ function submitRating() {
         return;
     }
     
-    const review = document.getElementById('review-text')?.value || '';
-    
     const ratings = JSON.parse(localStorage.getItem('ratings') || '[]');
     ratings.push({
         rating: currentRating,
-        review: review,
+        review: document.getElementById('review-text').value,
         date: new Date().toISOString(),
         role: userRole
     });
@@ -848,285 +388,95 @@ function submitRating() {
 }
 
 function closeRatingPopup() {
-    const popup = document.getElementById('rating-popup');
-    if (popup) popup.style.display = 'none';
-    
-    const reviewText = document.getElementById('review-text');
-    if (reviewText) reviewText.value = '';
-    
+    document.getElementById('rating-popup').style.display = 'none';
+    document.getElementById('review-text').value = '';
     currentRating = 0;
-    
-    document.querySelectorAll('.rating-stars span').forEach(star => {
-        star.classList.remove('active');
-    });
-    
-    const selectedRating = document.getElementById('selected-rating');
-    if (selectedRating) selectedRating.textContent = '';
+    document.querySelectorAll('.rating-stars span').forEach(star => star.style.color = '#ddd');
+    document.getElementById('selected-rating').textContent = '';
 }
 
 function closeConfirmation() {
-    const popup = document.getElementById('confirmation-popup');
-    if (popup) popup.style.display = 'none';
+    document.getElementById('confirmation-popup').style.display = 'none';
 }
 
 // Admin functions
 function showAdminLogin() {
-    const popup = document.getElementById('admin-login-popup');
-    if (popup) popup.style.display = 'flex';
+    document.getElementById('admin-login-popup').style.display = 'flex';
 }
 
 function closeAdminLogin() {
-    const popup = document.getElementById('admin-login-popup');
-    if (popup) popup.style.display = 'none';
-    
-    const username = document.getElementById('admin-username');
-    const password = document.getElementById('admin-password');
-    
-    if (username) username.value = '';
-    if (password) password.value = '';
+    document.getElementById('admin-login-popup').style.display = 'none';
+    document.getElementById('admin-username').value = '';
+    document.getElementById('admin-password').value = '';
 }
 
 function adminLogin() {
-    const username = document.getElementById('admin-username')?.value;
-    const password = document.getElementById('admin-password')?.value;
+    const username = document.getElementById('admin-username').value;
+    const password = document.getElementById('admin-password').value;
     
-    const admin = admins.find(a => a.username === username && a.password === password);
-    
-    if (admin) {
+    if (admins.some(a => a.username === username && a.password === password)) {
         currentAdmin = username;
         closeAdminLogin();
         loadAdminDashboard();
-        
-        const dashboard = document.getElementById('admin-dashboard');
-        if (dashboard) dashboard.style.display = 'flex';
+        document.getElementById('admin-dashboard').style.display = 'flex';
     } else {
-        alert('Invalid admin credentials!');
+        alert('Invalid credentials');
     }
 }
 
 function loadAdminDashboard() {
-    loadPendingOrders();
-    loadCompletedOrders();
-    loadAllRatings();
-    updateRatingSummary();
-    loadStatistics();
-    loadPopularItems();
-    loadLocationStats();
-}
-
-function loadPendingOrders() {
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const pendingOrders = orders.filter(o => o.status === 'pending');
+    const ratings = JSON.parse(localStorage.getItem('ratings') || '[]');
     
-    const list = document.getElementById('pending-orders-list');
-    if (!list) return;
+    // Pending orders
+    const pending = orders.filter(o => o.status === 'pending');
+    document.getElementById('pending-orders-list').innerHTML = pending.length ? 
+        pending.map(o => `<div class="admin-list-item">Order #${o.id} - P${o.total} <button onclick="markOrderCompleted('${o.id}')">Complete</button></div>`).join('') :
+        '<p>No pending orders</p>';
     
-    if (pendingOrders.length === 0) {
-        list.innerHTML = '<p class="no-items">No pending orders</p>';
-        return;
-    }
+    // Completed orders
+    const completed = orders.filter(o => o.status === 'completed');
+    document.getElementById('completed-orders-list').innerHTML = completed.length ?
+        completed.map(o => `<div class="admin-list-item">Order #${o.id} - P${o.total}</div>`).join('') :
+        '<p>No completed orders</p>';
     
-    list.innerHTML = pendingOrders.map(order => `
-        <div class="admin-list-item">
-            <div class="item-info">
-                <strong>Order #${order.id}</strong><br>
-                <small>${new Date(order.timestamp).toLocaleString()}</small><br>
-                <small>Role: ${order.role}</small><br>
-                <small>Total: P ${order.total.toFixed(2)}</small>
-            </div>
-            <button onclick="markOrderCompleted('${order.id}')" class="status-pending">
-                Mark Complete
-            </button>
-        </div>
-    `).join('');
-}
-
-function loadCompletedOrders() {
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const completedOrders = orders.filter(o => o.status === 'completed');
+    // Ratings
+    document.getElementById('all-ratings-list').innerHTML = ratings.length ?
+        ratings.map(r => `<div class="admin-list-item">${r.rating}/5 - ${r.review || 'No review'}</div>`).join('') :
+        '<p>No ratings yet</p>';
     
-    const list = document.getElementById('completed-orders-list');
-    if (!list) return;
-    
-    if (completedOrders.length === 0) {
-        list.innerHTML = '<p class="no-items">No completed orders</p>';
-        return;
-    }
-    
-    list.innerHTML = completedOrders.map(order => `
-        <div class="admin-list-item">
-            <div class="item-info">
-                <strong>Order #${order.id}</strong><br>
-                <small>${new Date(order.timestamp).toLocaleString()}</small><br>
-                <small>Role: ${order.role}</small><br>
-                <small>Total: P ${order.total.toFixed(2)}</small>
-            </div>
-            <span class="item-status status-completed">Completed</span>
-        </div>
-    `).join('');
+    // Stats
+    const avg = ratings.length ? ratings.reduce((s, r) => s + r.rating, 0) / ratings.length : 0;
+    document.getElementById('avg-rating').textContent = avg.toFixed(1);
+    document.getElementById('total-reviews').textContent = ratings.length;
+    document.getElementById('total-orders').textContent = orders.length;
+    document.getElementById('total-revenue').textContent = `P ${orders.reduce((s, o) => s + o.total, 0).toFixed(2)}`;
+    document.getElementById('total-deliveries').textContent = orders.filter(o => o.deliveryMethod === 'delivery').length;
 }
 
 function markOrderCompleted(orderId) {
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const orderIndex = orders.findIndex(o => o.id === orderId);
-    
-    if (orderIndex !== -1) {
-        orders[orderIndex].status = 'completed';
-        localStorage.setItem('orders', JSON.stringify(orders));
-        loadAdminDashboard();
-        showNotification('Order marked as completed');
-    }
-}
-
-function loadAllRatings() {
-    const ratings = JSON.parse(localStorage.getItem('ratings') || '[]');
-    
-    const list = document.getElementById('all-ratings-list');
-    if (!list) return;
-    
-    if (ratings.length === 0) {
-        list.innerHTML = '<p class="no-items">No ratings yet</p>';
-        return;
-    }
-    
-    list.innerHTML = ratings.map(rating => `
-        <div class="admin-list-item">
-            <div class="item-info">
-                <strong>Rating: ${rating.rating}/5</strong><br>
-                <small>${new Date(rating.date).toLocaleString()}</small><br>
-                <small>Role: ${rating.role}</small><br>
-                ${rating.review ? `<small>"${rating.review}"</small>` : ''}
-            </div>
-        </div>
-    `).join('');
-}
-
-function updateRatingSummary() {
-    const ratings = JSON.parse(localStorage.getItem('ratings') || '[]');
-    
-    const avgRating = document.getElementById('avg-rating');
-    const totalReviews = document.getElementById('total-reviews');
-    
-    if (!avgRating || !totalReviews) return;
-    
-    if (ratings.length === 0) {
-        avgRating.textContent = '0';
-        totalReviews.textContent = '0';
-        return;
-    }
-    
-    const avg = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
-    avgRating.textContent = avg.toFixed(1);
-    totalReviews.textContent = ratings.length;
-}
-
-function loadStatistics() {
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    
-    const totalOrders = document.getElementById('total-orders');
-    const totalRevenue = document.getElementById('total-revenue');
-    const totalDiscounts = document.getElementById('total-discounts');
-    const totalDeliveries = document.getElementById('total-deliveries');
-    
-    if (totalOrders) totalOrders.textContent = orders.length;
-    
-    const revenue = orders.reduce((sum, o) => sum + parseFloat(o.total), 0);
-    if (totalRevenue) totalRevenue.textContent = `P ${revenue.toFixed(2)}`;
-    
-    const discounts = orders.reduce((sum, o) => sum + parseFloat(o.discount), 0);
-    if (totalDiscounts) totalDiscounts.textContent = `P ${discounts.toFixed(2)}`;
-    
-    const deliveries = orders.filter(o => o.deliveryMethod === 'delivery').length;
-    if (totalDeliveries) totalDeliveries.textContent = deliveries;
-}
-
-function loadPopularItems() {
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const itemCount = {};
-    
-    orders.forEach(order => {
-        order.items.forEach(item => {
-            itemCount[item.name] = (itemCount[item.name] || 0) + item.quantity;
-        });
-    });
-    
-    const sortedItems = Object.entries(itemCount)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
-    
-    const list = document.getElementById('popular-items-list');
-    if (!list) return;
-    
-    if (sortedItems.length === 0) {
-        list.innerHTML = '<p class="no-items">No sales data yet</p>';
-        return;
-    }
-    
-    list.innerHTML = sortedItems.map(([name, count]) => `
-        <div class="admin-list-item">
-            <span><strong>${name}</strong></span>
-            <span class="item-status">${count} sold</span>
-        </div>
-    `).join('');
-}
-
-function loadLocationStats() {
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const locationCount = {};
-    
-    orders.filter(o => o.deliveryMethod === 'delivery').forEach(order => {
-        locationCount[order.location] = (locationCount[order.location] || 0) + 1;
-    });
-    
-    const list = document.getElementById('location-stats');
-    if (!list) return;
-    
-    if (Object.keys(locationCount).length === 0) {
-        list.innerHTML = '<p class="no-items">No delivery data yet</p>';
-        return;
-    }
-    
-    list.innerHTML = Object.entries(locationCount)
-        .sort((a, b) => b[1] - a[1])
-        .map(([location, count]) => `
-            <div class="admin-list-item">
-                <span><strong>${location}</strong></span>
-                <span class="item-status">${count} deliveries</span>
-            </div>
-        `).join('');
+    const order = orders.find(o => o.id === orderId);
+    if (order) order.status = 'completed';
+    localStorage.setItem('orders', JSON.stringify(orders));
+    loadAdminDashboard();
 }
 
 function switchAdminTab(tabName) {
-    // Update tab buttons
-    document.querySelectorAll('.admin-tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
     
-    if (event && event.target) {
-        event.target.classList.add('active');
-    }
-    
-    // Update tab content
-    document.querySelectorAll('.admin-tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-    
-    const tabContent = document.getElementById(`admin-${tabName}-tab`);
-    if (tabContent) tabContent.classList.add('active');
+    document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById(`admin-${tabName}-tab`).classList.add('active');
 }
 
 function logoutAdmin() {
     currentAdmin = null;
-    
-    const dashboard = document.getElementById('admin-dashboard');
-    if (dashboard) dashboard.style.display = 'none';
-    
-    showNotification('Logged out successfully');
+    document.getElementById('admin-dashboard').style.display = 'none';
 }
 
 function closeAdminDashboard() {
-    const dashboard = document.getElementById('admin-dashboard');
-    if (dashboard) dashboard.style.display = 'none';
+    document.getElementById('admin-dashboard').style.display = 'none';
 }
 
 // Close popups when clicking outside
@@ -1134,4 +484,4 @@ window.onclick = function(event) {
     if (event.target.classList.contains('popup')) {
         event.target.style.display = 'none';
     }
-}
+};
