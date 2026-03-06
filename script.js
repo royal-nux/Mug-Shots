@@ -251,13 +251,31 @@ function checkout() {
     document.getElementById('delivery-popup').style.display = 'flex';
 }
 
+// Delivery and location variables
+let deliveryMethod = null;
+let deliveryLocation = null;
+
+// Checkout function
+function checkout() {
+    if (order.length === 0) {
+        showNotification('Your order is empty!');
+        return;
+    }
+    document.getElementById('delivery-popup').style.display = 'flex';
+}
+
 // Delivery selection
 function selectDelivery(method) {
     deliveryMethod = method;
     document.getElementById('delivery-popup').style.display = 'none';
     
     if (method === 'collect') {
+        // For collection, no location needed
+        deliveryLocation = 'Collection (counter pick-up)';
         completeOrder();
+    } else if (method === 'delivery') {
+        // For delivery, show location popup
+        document.getElementById('location-popup').style.display = 'flex';
     }
 }
 
@@ -267,24 +285,20 @@ function showDeliveryLocation() {
     document.getElementById('location-popup').style.display = 'flex';
 }
 
-// Location selection variables
-let selectedCampus = '';
-let selectedSpecificLocation = '';
-let selectedRoom = '';
-
 // Campus location functions
 function updateCampusLocation() {
     const campus = document.getElementById('campus-select').value;
-    selectedCampus = campus;
     
-    // Hide all location sections
+    // Hide all sections
     document.getElementById('main-campus-locations').style.display = 'none';
     document.getElementById('new-campus-locations').style.display = 'none';
+    document.getElementById('lab-numbers').style.display = 'none';
+    document.getElementById('academic-block-select').style.display = 'none';
     document.getElementById('lecture-theatre-details').style.display = 'none';
-    document.getElementById('academic-block-details').style.display = 'none';
     document.getElementById('office-details').style.display = 'none';
     document.getElementById('new-block-details').style.display = 'none';
-    document.getElementById('location-summary').style.display = 'none';
+    document.getElementById('academic-room-field').style.display = 'none';
+    document.getElementById('lecture-room-field').style.display = 'none';
     
     // Reset all fields
     resetLocationFields();
@@ -299,59 +313,61 @@ function updateCampusLocation() {
 
 function resetLocationFields() {
     // Reset all select and input fields
-    const selects = ['main-location', 'new-location', 'lecture-theatre', 'academic-block'];
-    const inputs = ['lecture-room', 'academic-room', 'office-number', 'new-block-room', 'other-location'];
+    const selects = [
+        'main-location', 'new-location', 'lab-number', 'academic-block-letter',
+        'lecture-theatre', 'academic-room', 'lecture-room', 'office-number',
+        'new-block-room', 'other-location'
+    ];
     
     selects.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.value = '';
-    });
-    
-    inputs.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
+        if (el) {
+            if (el.tagName === 'SELECT') {
+                el.value = '';
+            } else {
+                el.value = '';
+            }
+        }
     });
 }
 
 function updateMainLocationDetails() {
     const location = document.getElementById('main-location').value;
-    selectedSpecificLocation = location;
     
     // Hide all detail sections
+    document.getElementById('lab-numbers').style.display = 'none';
+    document.getElementById('academic-block-select').style.display = 'none';
     document.getElementById('lecture-theatre-details').style.display = 'none';
-    document.getElementById('academic-block-details').style.display = 'none';
     document.getElementById('office-details').style.display = 'none';
+    document.getElementById('academic-room-field').style.display = 'none';
+    document.getElementById('lecture-room-field').style.display = 'none';
     
-    // Reset room fields
-    document.getElementById('lecture-room').value = '';
+    // Reset relevant fields
+    document.getElementById('lab-number').value = '';
+    document.getElementById('academic-block-letter').value = '';
     document.getElementById('academic-room').value = '';
+    document.getElementById('lecture-theatre').value = '';
+    document.getElementById('lecture-room').value = '';
     document.getElementById('office-number').value = '';
     
-    if (location === 'lecture-theatre') {
-        document.getElementById('lecture-theatre-details').style.display = 'block';
+    if (location === 'labs') {
+        document.getElementById('lab-numbers').style.display = 'block';
     } else if (location === 'academic-blocks') {
-        document.getElementById('academic-block-details').style.display = 'block';
+        document.getElementById('academic-block-select').style.display = 'block';
+    } else if (location === 'lecture-theatre') {
+        document.getElementById('lecture-theatre-details').style.display = 'block';
     } else if (location === 'offices') {
         document.getElementById('office-details').style.display = 'block';
-    } else if (location) {
-        // For simple locations (reception, labs, cafeteria), show summary immediately
-        updateLocationSummary();
     }
 }
 
-function updateNewLocationDetails() {
-    const location = document.getElementById('new-location').value;
-    selectedSpecificLocation = location;
-    
-    // Hide new block details
-    document.getElementById('new-block-details').style.display = 'none';
-    document.getElementById('new-block-room').value = '';
-    
-    if (location === 'block-a' || location === 'block-b') {
-        document.getElementById('new-block-details').style.display = 'block';
-    } else if (location === 'library') {
-        // Library doesn't need room number, show summary immediately
-        updateLocationSummary();
+function updateAcademicBlockRoom() {
+    const block = document.getElementById('academic-block-letter').value;
+    if (block) {
+        document.getElementById('academic-room-field').style.display = 'block';
+    } else {
+        document.getElementById('academic-room-field').style.display = 'none';
+        document.getElementById('academic-room').value = '';
     }
 }
 
@@ -365,113 +381,134 @@ function updateLectureTheatreRoom() {
     }
 }
 
-function updateAcademicBlockRoom() {
-    const block = document.getElementById('academic-block').value;
-    if (block) {
-        document.getElementById('academic-room-field').style.display = 'block';
-    } else {
-        document.getElementById('academic-room-field').style.display = 'none';
-        document.getElementById('academic-room').value = '';
+function updateNewLocationDetails() {
+    const location = document.getElementById('new-location').value;
+    
+    document.getElementById('new-block-details').style.display = 'none';
+    document.getElementById('new-block-room').value = '';
+    
+    if (location === 'block-a' || location === 'block-b') {
+        document.getElementById('new-block-details').style.display = 'block';
     }
-}
-
-function updateLocationSummary() {
-    const summary = document.getElementById('location-summary');
-    const summaryText = document.getElementById('selected-location-text');
-    
-    let locationString = buildLocationString();
-    
-    if (locationString) {
-        summaryText.textContent = locationString;
-        summary.style.display = 'block';
-    } else {
-        summary.style.display = 'none';
-    }
-}
-
-function buildLocationString() {
-    const campus = document.getElementById('campus-select').value;
-    const mainLocation = document.getElementById('main-location')?.value || '';
-    const newLocation = document.getElementById('new-location')?.value || '';
-    const lectureTheatre = document.getElementById('lecture-theatre')?.value || '';
-    const lectureRoom = document.getElementById('lecture-room')?.value || '';
-    const academicBlock = document.getElementById('academic-block')?.value || '';
-    const academicRoom = document.getElementById('academic-room')?.value || '';
-    const officeNumber = document.getElementById('office-number')?.value || '';
-    const newBlockRoom = document.getElementById('new-block-room')?.value || '';
-    const otherLocation = document.getElementById('other-location')?.value || '';
-    
-    if (otherLocation) {
-        return otherLocation;
-    }
-    
-    if (!campus) return '';
-    
-    let location = campus === 'main' ? 'Main Campus' : 'New Campus';
-    
-    if (campus === 'main') {
-        if (mainLocation === 'reception') location += ' - Reception';
-        else if (mainLocation === 'labs') location += ' - Labs 1-12';
-        else if (mainLocation === 'cafeteria') location += ' - Cafeteria';
-        else if (mainLocation === 'offices') {
-            location += ' - Offices';
-            if (officeNumber) location += ` (${officeNumber})`;
-        }
-        else if (mainLocation === 'lecture-theatre') {
-            if (lectureTheatre) {
-                location += ` - ${lectureTheatre}`;
-                if (lectureRoom) location += ` (Room ${lectureRoom})`;
-            }
-        }
-        else if (mainLocation === 'academic-blocks') {
-            if (academicBlock) {
-                location += ` - Block ${academicBlock}`;
-                if (academicRoom) location += ` (Room ${academicRoom})`;
-            }
-        }
-    } else if (campus === 'new') {
-        if (newLocation === 'library') location += ' - Library';
-        else if (newLocation === 'block-a') {
-            location += ' - Block A';
-            if (newBlockRoom) location += ` (Room ${newBlockRoom})`;
-        }
-        else if (newLocation === 'block-b') {
-            location += ' - Block B';
-            if (newBlockRoom) location += ` (Room ${newBlockRoom})`;
-        }
-    }
-    
-    return location;
 }
 
 // Confirm delivery
 function confirmDelivery() {
-    const locationString = buildLocationString();
+    // Get all values
+    const campus = document.getElementById('campus-select').value;
+    const mainLocation = document.getElementById('main-location')?.value;
+    const newLocation = document.getElementById('new-location')?.value;
+    const labNumber = document.getElementById('lab-number')?.value;
+    const academicBlock = document.getElementById('academic-block-letter')?.value;
+    const academicRoom = document.getElementById('academic-room')?.value;
+    const lectureTheatre = document.getElementById('lecture-theatre')?.value;
+    const lectureRoom = document.getElementById('lecture-room')?.value;
+    const officeNumber = document.getElementById('office-number')?.value;
+    const newBlockRoom = document.getElementById('new-block-room')?.value;
+    const otherLocation = document.getElementById('other-location')?.value;
     
-    if (!locationString || locationString === 'Main Campus' || locationString === 'New Campus') {
-        alert('Please select a complete delivery location (campus and specific location)');
+    let location = '';
+    
+    // Check if other location is specified
+    if (otherLocation && otherLocation.trim() !== '') {
+        location = otherLocation.trim();
+    }
+    // Handle main campus
+    else if (campus === 'main') {
+        if (!mainLocation) {
+            alert('Please select a main campus location');
+            return;
+        }
+        
+        if (mainLocation === 'reception') {
+            location = 'Main Campus - Reception';
+        }
+        else if (mainLocation === 'cafeteria') {
+            location = 'Main Campus - Cafeteria';
+        }
+        else if (mainLocation === 'labs') {
+            if (!labNumber) {
+                alert('Please select a lab number');
+                return;
+            }
+            location = `Main Campus - Lab ${labNumber} (No eating/drinking)`;
+        }
+        else if (mainLocation === 'offices') {
+            if (!officeNumber) {
+                alert('Please enter office number');
+                return;
+            }
+            location = `Main Campus - Offices (${officeNumber})`;
+        }
+        else if (mainLocation === 'lecture-theatre') {
+            if (!lectureTheatre) {
+                alert('Please select a lecture theatre');
+                return;
+            }
+            location = `Main Campus - ${lectureTheatre}`;
+            if (lectureRoom) {
+                location += ` (Room ${lectureRoom})`;
+            }
+        }
+        else if (mainLocation === 'academic-blocks') {
+            if (!academicBlock) {
+                alert('Please select an academic block');
+                return;
+            }
+            location = `Main Campus - Block ${academicBlock}`;
+            if (academicRoom) {
+                location += ` (Room ${academicRoom})`;
+            }
+        }
+    }
+    // Handle new campus
+    else if (campus === 'new') {
+        if (!newLocation) {
+            alert('Please select a new campus location');
+            return;
+        }
+        
+        if (newLocation === 'library') {
+            location = 'New Campus - Library';
+        }
+        else if (newLocation === 'block-a') {
+            if (!newBlockRoom) {
+                alert('Please enter room number');
+                return;
+            }
+            location = `New Campus - Block A (Room ${newBlockRoom})`;
+        }
+        else if (newLocation === 'block-b') {
+            if (!newBlockRoom) {
+                alert('Please enter room number');
+                return;
+            }
+            location = `New Campus - Block B (Room ${newBlockRoom})`;
+        }
+    }
+    
+    if (!location) {
+        alert('Please select a complete delivery location');
         return;
     }
     
-    deliveryLocation = locationString;
+    deliveryLocation = location;
     closeLocationPopup();
     completeOrder();
 }
 
+// Close location popup
 function closeLocationPopup() {
-    const popup = document.getElementById('location-popup');
-    if (popup) {
-        popup.style.display = 'none';
-    }
+    document.getElementById('location-popup').style.display = 'none';
     
     // Reset all fields
     resetLocationFields();
     
     // Hide all sections
     const sections = [
-        'main-campus-locations', 'new-campus-locations', 'lecture-theatre-details',
-        'academic-block-details', 'office-details', 'new-block-details',
-        'lecture-room-field', 'academic-room-field', 'location-summary'
+        'main-campus-locations', 'new-campus-locations', 'lab-numbers',
+        'academic-block-select', 'lecture-theatre-details', 'office-details',
+        'new-block-details', 'academic-room-field', 'lecture-room-field'
     ];
     
     sections.forEach(id => {
@@ -480,30 +517,74 @@ function closeLocationPopup() {
     });
     
     // Reset campus select
-    const campusSelect = document.getElementById('campus-select');
-    if (campusSelect) campusSelect.value = '';
-    
-    selectedCampus = '';
-    selectedSpecificLocation = '';
-    selectedRoom = '';
+    document.getElementById('campus-select').value = '';
 }
 
-// Add event listeners to update summary when any field changes
-document.addEventListener('DOMContentLoaded', function() {
-    const fields = [
-        'campus-select', 'main-location', 'new-location', 'lecture-theatre',
-        'academic-block', 'lecture-room', 'academic-room', 'office-number',
-        'new-block-room', 'other-location'
-    ];
+// Complete order function (updated to handle delivery/collect properly)
+function completeOrder() {
+    const orderItems = [...order];
+    const subtotal = parseFloat(document.getElementById('subtotal').textContent);
+    const discount = parseFloat(document.getElementById('discount-amount').textContent);
+    const total = parseFloat(document.getElementById('total').textContent);
     
-    fields.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', updateLocationSummary);
-            el.addEventListener('keyup', updateLocationSummary);
-        }
-    });
-});
+    const orderData = {
+        id: 'ORD' + Date.now(),
+        timestamp: new Date().toISOString(),
+        items: orderItems,
+        subtotal: subtotal,
+        discount: discount,
+        total: total,
+        role: userRole,
+        deliveryMethod: deliveryMethod,
+        location: deliveryLocation || 'Collection (counter pick-up)',
+        status: 'pending'
+    };
+    
+    // Save to localStorage
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    orders.push(orderData);
+    localStorage.setItem('orders', JSON.stringify(orders));
+    
+    // Show confirmation
+    const message = document.getElementById('confirmation-message');
+    const studentCallSection = document.getElementById('student-call-section');
+    const staffMessage = document.getElementById('staff-message');
+    
+    let deliveryText = '';
+    if (deliveryMethod === 'collect') {
+        deliveryText = 'Please collect your order from Mug Shots counter.';
+    } else {
+        deliveryText = `Your coffee will be delivered to: ${deliveryLocation}`;
+    }
+    
+    message.innerHTML = `
+        <strong>Order #${orderData.id}</strong><br>
+        Thank you for ordering from Mug Shots!<br>
+        ${deliveryText}<br>
+        <strong>Total: P ${total.toFixed(2)}</strong>
+    `;
+    
+    // Show different options based on user role
+    if (userRole === 'student') {
+        if (studentCallSection) studentCallSection.style.display = 'block';
+        if (staffMessage) staffMessage.style.display = 'none';
+    } else {
+        if (studentCallSection) studentCallSection.style.display = 'none';
+        if (staffMessage) staffMessage.style.display = 'block';
+    }
+    
+    document.getElementById('confirmation-popup').style.display = 'flex';
+    
+    // Clear order
+    order = [];
+    updateOrderDisplay();
+    document.getElementById('checkout-btn').disabled = true;
+    
+    // Show rating popup after 30 seconds
+    setTimeout(() => {
+        document.getElementById('rating-popup').style.display = 'flex';
+    }, 30000);
+}
 // Rating functions
 function setRating(rating) {
     currentRating = rating;
