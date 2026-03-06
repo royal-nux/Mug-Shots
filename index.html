@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mug Shots - BAC Campus Coffee</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>☕ Mug Shots</h1>
+        <p class="slogan">"A mug worth shooting for"</p>
+        <p class="subtitle">Fresh coffee delivered to BAC campus!</p>
+    </header>
+
+    <main>
+        <section class="menu">
+            <h2>Our Coffee Menu</h2>
+            <div class="menu-items">
+                <div class="coffee-item" data-name="Espresso" data-price="3.50">
+                    <h3>Espresso</h3>
+                    <p>Rich and bold - $3.50</p>
+                    <button onclick="addToOrder('Espresso', 3.50)">Add to Order</button>
+                </div>
+                <div class="coffee-item" data-name="Cappuccino" data-price="4.50">
+                    <h3>Cappuccino</h3>
+                    <p>Smooth and creamy - $4.50</p>
+                    <button onclick="addToOrder('Cappuccino', 4.50)">Add to Order</button>
+                </div>
+                <div class="coffee-item" data-name="Latte" data-price="4.50">
+                    <h3>Latte</h3>
+                    <p>Espresso with steamed milk - $4.50</p>
+                    <button onclick="addToOrder('Latte', 4.50)">Add to Order</button>
+                </div>
+                <div class="coffee-item" data-name="Americano" data-price="3.50">
+                    <h3>Americano</h3>
+                    <p>Espresso with hot water - $3.50</p>
+                    <button onclick="addToOrder('Americano', 3.50)">Add to Order</button>
+                </div>
+                <div class="coffee-item" data-name="Mocha" data-price="5.00">
+                    <h3>Mocha</h3>
+                    <p>Chocolate and coffee - $5.00</p>
+                    <button onclick="addToOrder('Mocha', 5.00)">Add to Order</button>
+                </div>
+                <div class="coffee-item" data-name="Caramel Macchiato" data-price="5.50">
+                    <h3>Caramel Macchiato</h3>
+                    <p>Vanilla and caramel - $5.50</p>
+                    <button onclick="addToOrder('Caramel Macchiato', 5.50)">Add to Order</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="current-order">
+            <h2>Your Order</h2>
+            <div id="order-items"></div>
+            <div class="order-summary">
+                <p>Subtotal: $<span id="subtotal">0.00</span></p>
+                <p>Discount: <span id="discount-amount">$0.00</span></p>
+                <p><strong>Total: $<span id="total">0.00</span></strong></p>
+            </div>
+            <button id="checkout-btn" onclick="checkout()" disabled>Proceed to Checkout</button>
+        </section>
+    </main>
+
+    <!-- Role Selection Popup -->
+    <div id="role-popup" class="popup">
+        <div class="popup-content">
+            <h2>Welcome to Mug Shots! ☕</h2>
+            <p>"A mug worth shooting for"</p>
+            <p>Please identify yourself:</p>
+            <button onclick="selectRole('student')">🎓 Student (5% discount)</button>
+            <button onclick="selectRole('lecturer')">👨‍🏫 Lecturer</button>
+            <button onclick="selectRole('staff')">👔 BAC Staff</button>
+        </div>
+    </div>
+
+    <!-- Delivery Popup -->
+    <div id="delivery-popup" class="popup">
+        <div class="popup-content">
+            <h2>Delivery Options</h2>
+            <p>How would you like to receive your order?</p>
+            <button onclick="selectDelivery('collect')">🏢 I'll collect</button>
+            <button onclick="showDeliveryLocation()">🚚 Deliver to me</button>
+        </div>
+    </div>
+
+    <!-- Location Popup -->
+    <div id="location-popup" class="popup">
+        <div class="popup-content">
+            <h2>Delivery Location</h2>
+            <p>Where on campus should we deliver your coffee?</p>
+            <select id="campus-location">
+                <option value="">Select a location</option>
+                <option value="Library">📚 Library</option>
+                <option value="Main Building">🏛️ Main Building</option>
+                <option value="Science Block">🔬 Science Block</option>
+                <option value="Student Union">🎭 Student Union</option>
+                <option value="Cafeteria">🍽️ Cafeteria</option>
+                <option value="Sports Complex">⚽ Sports Complex</option>
+            </select>
+            <p class="small-text">Or specify other location:</p>
+            <input type="text" id="other-location" placeholder="Enter building/room number">
+            <button onclick="confirmDelivery()">Confirm Delivery Location</button>
+        </div>
+    </div>
+
+    <!-- Rating Popup -->
+    <div id="rating-popup" class="popup">
+        <div class="popup-content">
+            <h2>How was your coffee? ⭐</h2>
+            <p>Please rate your experience with Mug Shots:</p>
+            <div class="rating-stars">
+                <span onclick="setRating(1)">★</span>
+                <span onclick="setRating(2)">★</span>
+                <span onclick="setRating(3)">★</span>
+                <span onclick="setRating(4)">★</span>
+                <span onclick="setRating(5)">★</span>
+            </div>
+            <p id="selected-rating"></p>
+            <textarea id="review-text" placeholder="Tell us about your experience... (optional)"></textarea>
+            <button onclick="submitRating()">Submit Rating</button>
+            <button onclick="closeRatingPopup()">Maybe Later</button>
+        </div>
+    </div>
+
+    <!-- Order Confirmation -->
+    <div id="confirmation-popup" class="popup">
+        <div class="popup-content">
+            <h2>Order Confirmed! ✅</h2>
+            <p id="confirmation-message"></p>
+            <button onclick="closeConfirmation()">Great!</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 Mug Shots - BAC Campus | "A mug worth shooting for"</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
