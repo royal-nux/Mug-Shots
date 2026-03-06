@@ -484,26 +484,34 @@
     </div>
 </div>
 
-    <!-- Order Confirmation Popup -->
-    <div id="confirmation-popup" class="popup">
-        <div class="popup-content">
-            <i class="fas fa-check-circle popup-icon success"></i>
-            <h2>Order Confirmed!</h2>
-            <div id="confirmation-message" class="confirmation-message"></div>
-            
-            <div class="call-section">
-                <p>Need to confirm or modify your order?</p>
-                <a href="tel:+26771234567" class="call-btn">
-                    <i class="fas fa-phone-alt"></i> Call to Confirm
-                </a>
-                <p class="small-text">(Call within 5 minutes to make changes)</p>
-            </div>
-
-            <button onclick="closeConfirmation()" class="confirm-btn">
-                <i class="fas fa-thumbs-up"></i> Great!
-            </button>
+<!-- Order Confirmation Popup -->
+<div id="confirmation-popup" class="popup">
+    <div class="popup-content">
+        <i class="fas fa-check-circle popup-icon success"></i>
+        <h2>Order Confirmed!</h2>
+        <div id="confirmation-message" class="confirmation-message"></div>
+        
+        <!-- Call section - only visible to students -->
+        <div id="student-call-section" class="call-section" style="display: none;">
+            <p><i class="fas fa-graduation-cap"></i> Student Special:</p>
+            <p>Need to confirm or modify your order?</p>
+            <a href="tel:+26771234567" class="call-btn">
+                <i class="fas fa-phone-alt"></i> Call to Confirm
+            </a>
+            <p class="small-text">(Call within 5 minutes to make changes)</p>
         </div>
+
+        <!-- Staff/Lecturer message -->
+        <div id="staff-message" class="staff-message" style="display: none;">
+            <p><i class="fas fa-info-circle"></i> Your order has been received.</p>
+            <p>Please wait for confirmation SMS.</p>
+        </div>
+
+        <button onclick="closeConfirmation()" class="confirm-btn">
+            <i class="fas fa-thumbs-up"></i> Great!
+        </button>
     </div>
+</div>
 
     <!-- Rating Popup -->
     <div id="rating-popup" class="popup">
