@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mug Shots - BAC Campus Coffee</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
     <header>
         <div class="header-content">
             <div class="logo-area">
-                <img src="https://via.placeholder.com/80x80/8B5A2B/FFFFFF?text=Mug+Shots" alt="Mug Shots Logo" class="logo" id="logo-img">
+                <img src="https://via.placeholder.com/80x80/8B5A2B/FFFFFF?text=Mug+Shots" alt="Mug Shots Logo" class="logo">
                 <h1>Mug Shots</h1>
             </div>
             <p class="slogan">"a mug worth shooting for"</p>
@@ -37,12 +37,12 @@
                     <i class="fas fa-chevron-down category-toggle"></i>
                 </div>
                 <div id="hot-drinks" class="category-items active">
+                    <!-- Espresso -->
                     <div class="subcategory">
                         <h4>Espresso</h4>
                         <div class="menu-items">
-                            <!-- Single Espresso -->
-                            <div class="coffee-item" onclick="showSizeOptions('Single Espresso', 15.00, 'single')">
-                                <div class="coffee-image" id="espresso-single-img">
+                            <div class="coffee-item" data-name="Single Espresso" data-price="15.00" data-type="single">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Espresso" alt="Single Espresso">
                                 </div>
                                 <div class="coffee-details">
@@ -50,14 +50,11 @@
                                     <p>Strong & pure</p>
                                     <span class="price">P 15.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showSizeOptions('Single Espresso', 15.00, 'single');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
                             
-                            <!-- Double Espresso -->
-                            <div class="coffee-item" onclick="showSizeOptions('Double Espresso', 18.00, 'double')">
-                                <div class="coffee-image" id="espresso-double-img">
+                            <div class="coffee-item" data-name="Double Espresso" data-price="18.00" data-type="double">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Double" alt="Double Espresso">
                                 </div>
                                 <div class="coffee-details">
@@ -65,19 +62,17 @@
                                     <p>Double the kick</p>
                                     <span class="price">P 18.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showSizeOptions('Double Espresso', 18.00, 'double');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Signature Hot Drinks -->
                     <div class="subcategory">
                         <h4>Signature Hot Drinks</h4>
                         <div class="menu-items">
-                            <!-- Cappuccino -->
-                            <div class="coffee-item" onclick="showSizeOptions('Cappuccino', 18.50, 'cappuccino')">
-                                <div class="coffee-image" id="cappuccino-img">
+                            <div class="coffee-item" data-name="Cappuccino" data-price="18.50" data-type="regular">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Capp" alt="Cappuccino">
                                 </div>
                                 <div class="coffee-details">
@@ -85,14 +80,11 @@
                                     <p>Espresso with foamy milk</p>
                                     <span class="price">P 18.50</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showSizeOptions('Cappuccino', 18.50, 'cappuccino');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Cafe Latte -->
-                            <div class="coffee-item" onclick="showLatteOptions()">
-                                <div class="coffee-image" id="latte-img">
+                            <div class="coffee-item" data-name="Cafe Latte" data-price="18.00" data-type="latte">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Latte" alt="Cafe Latte">
                                 </div>
                                 <div class="coffee-details">
@@ -100,14 +92,11 @@
                                     <p>Smooth & creamy</p>
                                     <span class="price">P 18.00 - 23.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showLatteOptions();">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Cafe Mocha -->
-                            <div class="coffee-item" onclick="showSizeOptions('Cafe Mocha', 22.00, 'mocha')">
-                                <div class="coffee-image" id="mocha-img">
+                            <div class="coffee-item" data-name="Cafe Mocha" data-price="22.00" data-type="regular">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Mocha" alt="Cafe Mocha">
                                 </div>
                                 <div class="coffee-details">
@@ -115,14 +104,11 @@
                                     <p>Chocolate & coffee delight</p>
                                     <span class="price">P 22.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showSizeOptions('Cafe Mocha', 22.00, 'mocha');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Chai Latte -->
-                            <div class="coffee-item" onclick="showSizeOptions('Chai Latte', 20.00, 'chai')">
-                                <div class="coffee-image" id="chai-img">
+                            <div class="coffee-item" data-name="Chai Latte" data-price="20.00" data-type="regular">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Chai" alt="Chai Latte">
                                 </div>
                                 <div class="coffee-details">
@@ -130,14 +116,11 @@
                                     <p>Spiced tea with milk</p>
                                     <span class="price">P 20.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showSizeOptions('Chai Latte', 20.00, 'chai');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Hot Chocolate -->
-                            <div class="coffee-item" onclick="showSizeOptions('Hot Chocolate', 22.00, 'hot-choc')">
-                                <div class="coffee-image" id="hot-choc-img">
+                            <div class="coffee-item" data-name="Hot Chocolate" data-price="22.00" data-type="regular">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Hot+Choc" alt="Hot Chocolate">
                                 </div>
                                 <div class="coffee-details">
@@ -145,14 +128,11 @@
                                     <p>Rich & creamy</p>
                                     <span class="price">P 22.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showSizeOptions('Hot Chocolate', 22.00, 'hot-choc');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Milo -->
-                            <div class="coffee-item" onclick="showMiloOptions()">
-                                <div class="coffee-image" id="milo-img">
+                            <div class="coffee-item" data-name="Milo" data-price="23.00" data-type="milo">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Milo" alt="Milo">
                                 </div>
                                 <div class="coffee-details">
@@ -160,9 +140,7 @@
                                     <p>Chocolate malt drink</p>
                                     <span class="price">P 23.00 - 27.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showMiloOptions();">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
                     </div>
@@ -179,9 +157,8 @@
                     <div class="subcategory">
                         <h4>Chilled Coffee</h4>
                         <div class="menu-items">
-                            <!-- Coffee Freezo -->
-                            <div class="coffee-item" onclick="showSizeOptions('Coffee Freezo', 26.00, 'freezo')">
-                                <div class="coffee-image" id="freezo-img">
+                            <div class="coffee-item" data-name="Coffee Freezo" data-price="26.00" data-type="regular">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Freezo" alt="Coffee Freezo">
                                 </div>
                                 <div class="coffee-details">
@@ -189,19 +166,16 @@
                                     <p>Blended iced coffee</p>
                                     <span class="price">P 26.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showSizeOptions('Coffee Freezo', 26.00, 'freezo');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
                     </div>
 
                     <div class="subcategory">
-                        <h4>Milkshakes</h4>
+                        <h4>Milkshakes - P26 each</h4>
                         <div class="menu-items">
-                            <!-- Vanilla Milkshake -->
-                            <div class="coffee-item" onclick="showMilkshakeOptions('Vanilla')">
-                                <div class="coffee-image" id="vanilla-img">
+                            <div class="coffee-item" data-name="Vanilla Milkshake" data-price="26.00" data-type="milkshake">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Vanilla" alt="Vanilla">
                                 </div>
                                 <div class="coffee-details">
@@ -209,29 +183,23 @@
                                     <p>Classic vanilla flavor</p>
                                     <span class="price">P 26.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showMilkshakeOptions('Vanilla');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Salted Caramel Milkshake -->
-                            <div class="coffee-item" onclick="showMilkshakeOptions('Salted Caramel')">
-                                <div class="coffee-image" id="salted-caramel-img">
+                            <div class="coffee-item" data-name="Salted Caramel Milkshake" data-price="26.00" data-type="milkshake">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Salted" alt="Salted Caramel">
                                 </div>
                                 <div class="coffee-details">
                                     <h5>Salted Caramel</h5>
-                                    <p>Sweet & salty perfection</p>
+                                    <p>Sweet & salty</p>
                                     <span class="price">P 26.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showMilkshakeOptions('Salted Caramel');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Caramel Milkshake -->
-                            <div class="coffee-item" onclick="showMilkshakeOptions('Caramel')">
-                                <div class="coffee-image" id="caramel-img">
+                            <div class="coffee-item" data-name="Caramel Milkshake" data-price="26.00" data-type="milkshake">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Caramel" alt="Caramel">
                                 </div>
                                 <div class="coffee-details">
@@ -239,29 +207,23 @@
                                     <p>Smooth caramel</p>
                                     <span class="price">P 26.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showMilkshakeOptions('Caramel');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Chocolate Milkshake -->
-                            <div class="coffee-item" onclick="showMilkshakeOptions('Chocolate')">
-                                <div class="coffee-image" id="chocolate-img">
+                            <div class="coffee-item" data-name="Chocolate Milkshake" data-price="26.00" data-type="milkshake">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Choc" alt="Chocolate">
                                 </div>
                                 <div class="coffee-details">
                                     <h5>Chocolate</h5>
-                                    <p>Rich chocolate flavor</p>
+                                    <p>Rich chocolate</p>
                                     <span class="price">P 26.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showMilkshakeOptions('Chocolate');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Strawberry Milkshake -->
-                            <div class="coffee-item" onclick="showMilkshakeOptions('Strawberry')">
-                                <div class="coffee-image" id="strawberry-img">
+                            <div class="coffee-item" data-name="Strawberry Milkshake" data-price="26.00" data-type="milkshake">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Straw" alt="Strawberry">
                                 </div>
                                 <div class="coffee-details">
@@ -269,44 +231,35 @@
                                     <p>Sweet strawberry</p>
                                     <span class="price">P 26.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showMilkshakeOptions('Strawberry');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Lime Milkshake -->
-                            <div class="coffee-item" onclick="showMilkshakeOptions('Lime')">
-                                <div class="coffee-image" id="lime-img">
+                            <div class="coffee-item" data-name="Lime Milkshake" data-price="26.00" data-type="milkshake">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Lime" alt="Lime">
                                 </div>
                                 <div class="coffee-details">
                                     <h5>Lime</h5>
-                                    <p>Zesty lime refreshment</p>
+                                    <p>Zesty lime</p>
                                     <span class="price">P 26.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showMilkshakeOptions('Lime');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Bubblegum Milkshake -->
-                            <div class="coffee-item" onclick="showMilkshakeOptions('Bubblegum')">
-                                <div class="coffee-image" id="bubblegum-img">
+                            <div class="coffee-item" data-name="Bubblegum Milkshake" data-price="26.00" data-type="milkshake">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Bubble" alt="Bubblegum">
                                 </div>
                                 <div class="coffee-details">
                                     <h5>Bubblegum</h5>
-                                    <p>Fun bubblegum flavor</p>
+                                    <p>Fun bubblegum</p>
                                     <span class="price">P 26.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showMilkshakeOptions('Bubblegum');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
 
-                            <!-- Banana Milkshake -->
-                            <div class="coffee-item" onclick="showMilkshakeOptions('Banana')">
-                                <div class="coffee-image" id="banana-img">
+                            <div class="coffee-item" data-name="Banana Milkshake" data-price="26.00" data-type="milkshake">
+                                <div class="coffee-image">
                                     <img src="https://via.placeholder.com/60x60/8B5A2B/FFFFFF?text=Banana" alt="Banana">
                                 </div>
                                 <div class="coffee-details">
@@ -314,9 +267,7 @@
                                     <p>Creamy banana</p>
                                     <span class="price">P 26.00</span>
                                 </div>
-                                <button class="add-btn" onclick="event.stopPropagation(); showMilkshakeOptions('Banana');">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+                                <button class="add-btn" onclick="event.stopPropagation(); showSizePopup(this)"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
                     </div>
@@ -338,31 +289,15 @@
         </section>
     </main>
 
-    <!-- Size Selection Popup with Dropdown -->
+    <!-- Size Selection Popup -->
     <div id="size-popup" class="popup">
         <div class="popup-content">
             <i class="fas fa-mug-hot popup-icon"></i>
             <h2 id="size-popup-title">Select Size</h2>
-            
-            <div class="size-selector">
-                <label for="size-dropdown"><i class="fas fa-chevron-down"></i> Choose size:</label>
-                <select id="size-dropdown" class="size-dropdown" onchange="updateSizePrice()">
-                    <option value="">-- Select Size --</option>
-                </select>
-                
-                <div id="size-price-display" class="size-price">
-                    Price: <span id="selected-size-price">P 0.00</span>
-                </div>
-            </div>
-            
-            <div class="size-actions">
-                <button onclick="addToOrderWithSize()" class="confirm-btn" id="add-size-btn" disabled>
-                    <i class="fas fa-plus"></i> Add to Order
-                </button>
-                <button onclick="closeSizePopup()" class="later-btn">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-            </div>
+            <div id="size-options" class="size-options"></div>
+            <button onclick="closeSizePopup()" class="later-btn">
+                <i class="fas fa-times"></i> Cancel
+            </button>
         </div>
     </div>
 
@@ -400,26 +335,24 @@
         </div>
     </div>
 
-    <!-- Location Popup with Hierarchical Dropdowns -->
+    <!-- Location Popup -->
     <div id="location-popup" class="popup">
         <div class="popup-content location-content">
             <i class="fas fa-map-pin popup-icon"></i>
             <h2>Delivery Location</h2>
             <p>Select your campus and specific location:</p>
 
-            <!-- Campus Selection -->
             <div class="location-category">
-                <label><i class="fas fa-university"></i> Select Campus:</label>
-                <select id="campus-select" class="location-select" onchange="updateCampusLocation()" required>
+                <label>Select Campus:</label>
+                <select id="campus-select" class="location-select" onchange="updateCampusLocation()">
                     <option value="">-- Choose Campus --</option>
                     <option value="main">Main Campus</option>
                     <option value="new">New Campus</option>
                 </select>
             </div>
 
-            <!-- Main Campus Specific Locations -->
             <div id="main-campus-locations" class="location-category" style="display: none;">
-                <label><i class="fas fa-map-marker-alt"></i> Select Main Campus Location:</label>
+                <label>Select Main Campus Location:</label>
                 <select id="main-location" class="location-select" onchange="updateMainLocationDetails()">
                     <option value="">-- Choose Location --</option>
                     <option value="reception">Reception</option>
@@ -431,9 +364,8 @@
                 </select>
             </div>
 
-            <!-- Lab Numbers Dropdown -->
             <div id="lab-numbers" class="location-details" style="display: none;">
-                <label><i class="fas fa-flask"></i> Select Lab Number:</label>
+                <label>Select Lab Number:</label>
                 <select id="lab-number" class="location-select">
                     <option value="">-- Choose Lab --</option>
                     <option value="1">Lab 1</option>
@@ -449,13 +381,12 @@
                     <option value="11">Lab 11</option>
                     <option value="12">Lab 12</option>
                 </select>
-                <p class="small-text warning"><i class="fas fa-exclamation-triangle"></i> No eating or drinking in labs</p>
+                <p class="small-text warning">No eating or drinking in labs</p>
             </div>
 
-            <!-- Academic Blocks Dropdown -->
             <div id="academic-block-select" class="location-details" style="display: none;">
-                <label><i class="fas fa-building"></i> Select Block:</label>
-                <select id="academic-block-letter" class="location-select" onchange="updateAcademicBlockRoom()">
+                <label>Select Block:</label>
+                <select id="academic-block-letter" class="location-select">
                     <option value="">-- Choose Block --</option>
                     <option value="A">Block A</option>
                     <option value="B">Block B</option>
@@ -469,38 +400,25 @@
                     <option value="J">Block J</option>
                     <option value="K">Block K</option>
                 </select>
-                
-                <div id="academic-room-field" style="margin-top: 10px; display: none;">
-                    <label><i class="fas fa-door-open"></i> Enter Room Number:</label>
-                    <input type="text" id="academic-room" placeholder="e.g., 101, 205" class="location-input">
-                </div>
             </div>
 
-            <!-- Lecture Theatre Details -->
             <div id="lecture-theatre-details" class="location-details" style="display: none;">
-                <label><i class="fas fa-chalkboard"></i> Select Lecture Theatre:</label>
-                <select id="lecture-theatre" class="location-select" onchange="updateLectureTheatreRoom()">
+                <label>Select Lecture Theatre:</label>
+                <select id="lecture-theatre" class="location-select">
                     <option value="">-- Choose Theatre --</option>
                     <option value="Main Lecture Theatre">Main Lecture Theatre</option>
                     <option value="Upper Lecture Theatre">Upper Lecture Theatre</option>
                     <option value="Lower Lecture Theatre">Lower Lecture Theatre</option>
                 </select>
-                
-                <div id="lecture-room-field" style="margin-top: 10px; display: none;">
-                    <label><i class="fas fa-door-open"></i> Enter Room Number:</label>
-                    <input type="text" id="lecture-room" placeholder="e.g., LT101, Room 5" class="location-input">
-                </div>
             </div>
 
-            <!-- Office Details -->
             <div id="office-details" class="location-details" style="display: none;">
-                <label><i class="fas fa-briefcase"></i> Enter Office Number:</label>
-                <input type="text" id="office-number" placeholder="e.g., Office 2B, Room 101" class="location-input">
+                <label>Enter Office Number:</label>
+                <input type="text" id="office-number" placeholder="e.g., Office 2B" class="location-input">
             </div>
 
-            <!-- New Campus Locations -->
             <div id="new-campus-locations" class="location-category" style="display: none;">
-                <label><i class="fas fa-map-marker-alt"></i> Select New Campus Location:</label>
+                <label>Select New Campus Location:</label>
                 <select id="new-location" class="location-select" onchange="updateNewLocationDetails()">
                     <option value="">-- Choose Location --</option>
                     <option value="library">Library</option>
@@ -509,21 +427,14 @@
                 </select>
             </div>
 
-            <!-- New Campus Block Details -->
             <div id="new-block-details" class="location-details" style="display: none;">
-                <label><i class="fas fa-door-open"></i> Enter Room Number:</label>
-                <input type="text" id="new-block-room" placeholder="e.g., 101, 205" class="location-input">
+                <label>Enter Room Number:</label>
+                <input type="text" id="new-block-room" placeholder="e.g., 101" class="location-input">
             </div>
 
-            <!-- Other Location -->
             <div class="location-category">
-                <label><i class="fas fa-pen"></i> Or specify other location:</label>
+                <label>Or specify other location:</label>
                 <input type="text" id="other-location" placeholder="Enter specific location" class="location-input">
-            </div>
-
-            <!-- Selected Location Summary -->
-            <div id="location-summary" class="location-summary" style="display: none;">
-                <p><i class="fas fa-check-circle"></i> Selected: <span id="selected-location-text"></span></p>
             </div>
 
             <button onclick="confirmDelivery()" class="confirm-btn">
@@ -542,17 +453,15 @@
             <h2>Order Confirmed!</h2>
             <div id="confirmation-message" class="confirmation-message"></div>
             
-            <!-- Call section - only visible to students -->
             <div id="student-call-section" class="call-section" style="display: none;">
                 <p><i class="fas fa-graduation-cap"></i> Student Special:</p>
                 <p>Need to confirm or modify your order?</p>
                 <a href="tel:+26771234567" class="call-btn">
                     <i class="fas fa-phone-alt"></i> Call to Confirm
                 </a>
-                <p class="small-text">(Call within 5 minutes to make changes)</p>
+                <p class="small-text">(Call within 5 minutes)</p>
             </div>
 
-            <!-- Staff/Lecturer message -->
             <div id="staff-message" class="staff-message" style="display: none;">
                 <p><i class="fas fa-info-circle"></i> Your order has been received.</p>
                 <p>Please wait for confirmation SMS.</p>
@@ -569,13 +478,13 @@
         <div class="popup-content">
             <i class="fas fa-star popup-icon"></i>
             <h2>How was your coffee?</h2>
-            <p>Please rate your experience with Mug Shots:</p>
+            <p>Please rate your experience:</p>
             <div class="rating-stars">
-                <span onclick="setRating(1)"><i class="fas fa-star"></i></span>
-                <span onclick="setRating(2)"><i class="fas fa-star"></i></span>
-                <span onclick="setRating(3)"><i class="fas fa-star"></i></span>
-                <span onclick="setRating(4)"><i class="fas fa-star"></i></span>
-                <span onclick="setRating(5)"><i class="fas fa-star"></i></span>
+                <span onclick="setRating(1)">★</span>
+                <span onclick="setRating(2)">★</span>
+                <span onclick="setRating(3)">★</span>
+                <span onclick="setRating(4)">★</span>
+                <span onclick="setRating(5)">★</span>
             </div>
             <p id="selected-rating"></p>
             <textarea id="review-text" placeholder="Tell us about your experience... (optional)"></textarea>
@@ -593,7 +502,6 @@
         <div class="popup-content">
             <i class="fas fa-user-shield popup-icon"></i>
             <h2>Admin Login</h2>
-            <p>Enter your admin credentials</p>
             <input type="text" id="admin-username" placeholder="Username" class="admin-input">
             <input type="password" id="admin-password" placeholder="Password" class="admin-input">
             <button onclick="adminLogin()" class="admin-login-submit">
@@ -612,27 +520,20 @@
             <h2>Admin Dashboard</h2>
             
             <div class="admin-tabs">
-                <button class="admin-tab active" onclick="switchAdminTab('orders')">
-                    <i class="fas fa-shopping-cart"></i> Orders
-                </button>
-                <button class="admin-tab" onclick="switchAdminTab('ratings')">
-                    <i class="fas fa-star"></i> Ratings
-                </button>
-                <button class="admin-tab" onclick="switchAdminTab('stats')">
-                    <i class="fas fa-chart-bar"></i> Statistics
-                </button>
+                <button class="admin-tab active" onclick="switchAdminTab('orders')">Orders</button>
+                <button class="admin-tab" onclick="switchAdminTab('ratings')">Ratings</button>
+                <button class="admin-tab" onclick="switchAdminTab('stats')">Statistics</button>
             </div>
 
             <div id="admin-orders-tab" class="admin-tab-content active">
-                <h3><i class="fas fa-clock"></i> Pending Orders</h3>
+                <h3>Pending Orders</h3>
                 <div id="pending-orders-list" class="admin-list"></div>
-                
-                <h3><i class="fas fa-check-circle"></i> Completed Orders</h3>
+                <h3>Completed Orders</h3>
                 <div id="completed-orders-list" class="admin-list"></div>
             </div>
 
             <div id="admin-ratings-tab" class="admin-tab-content">
-                <h3><i class="fas fa-star"></i> Customer Ratings</h3>
+                <h3>Customer Ratings</h3>
                 <div id="all-ratings-list" class="admin-list"></div>
                 <div class="rating-summary">
                     <p>Average Rating: <span id="avg-rating">0</span>/5</p>
@@ -641,54 +542,32 @@
             </div>
 
             <div id="admin-stats-tab" class="admin-tab-content">
-                <h3><i class="fas fa-chart-pie"></i> Sales Statistics</h3>
+                <h3>Sales Statistics</h3>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <i class="fas fa-coffee"></i>
                         <h4>Total Orders</h4>
                         <p id="total-orders">0</p>
                     </div>
                     <div class="stat-card">
-                        <i class="fas fa-pula-sign"></i>
                         <h4>Total Revenue</h4>
                         <p id="total-revenue">P 0.00</p>
                     </div>
                     <div class="stat-card">
-                        <i class="fas fa-percent"></i>
-                        <h4>Student Discounts</h4>
-                        <p id="total-discounts">P 0.00</p>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-truck"></i>
                         <h4>Deliveries</h4>
                         <p id="total-deliveries">0</p>
                     </div>
                 </div>
-
-                <h3><i class="fas fa-chart-bar"></i> Popular Items</h3>
-                <div id="popular-items-list" class="admin-list"></div>
-
-                <h3><i class="fas fa-map-marker-alt"></i> Delivery Locations</h3>
-                <div id="location-stats" class="admin-list"></div>
             </div>
 
-            <button onclick="logoutAdmin()" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-            <button onclick="closeAdminDashboard()" class="later-btn">
-                <i class="fas fa-times"></i> Close
-            </button>
+            <button onclick="logoutAdmin()" class="logout-btn">Logout</button>
+            <button onclick="closeAdminDashboard()" class="later-btn">Close</button>
         </div>
     </div>
 
     <footer>
         <div class="footer-content">
-            <img src="https://via.placeholder.com/40x40/8B5A2B/FFFFFF?text=MS" alt="Mug Shots" class="footer-logo">
-            <p><i class="fas fa-copyright"></i> 2026 Mug Shots - BAC Campus</p>
+            <p>© 2026 Mug Shots - BAC Campus</p>
             <p class="footer-slogan">"a mug worth shooting for"</p>
-            <p class="contact-info">
-                <i class="fas fa-phone"></i> Call us: <a href="tel:+26771234567">+267 71 234 567</a>
-            </p>
         </div>
     </footer>
 
