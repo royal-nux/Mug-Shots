@@ -267,193 +267,193 @@ function showDeliveryLocation() {
     document.getElementById('location-popup').style.display = 'flex';
 }
 
+// Location selection variables
+let selectedCampus = '';
+let selectedSpecificLocation = '';
+let selectedRoom = '';
+
 // Campus location functions
 function updateCampusLocation() {
     const campus = document.getElementById('campus-select').value;
+    selectedCampus = campus;
     
-    // Hide all sections first
-    document.getElementById('main-campus-options').style.display = 'none';
-    document.getElementById('new-campus-options').style.display = 'none';
-    document.getElementById('lecture-theatre-options').style.display = 'none';
-    document.getElementById('academic-blocks-options').style.display = 'none';
-    document.getElementById('room-number-container').style.display = 'none';
-    document.getElementById('lecture-room-number').style.display = 'none';
-    document.getElementById('block-room-number').style.display = 'none';
-    document.getElementById('new-campus-room').style.display = 'none';
+    // Hide all location sections
+    document.getElementById('main-campus-locations').style.display = 'none';
+    document.getElementById('new-campus-locations').style.display = 'none';
+    document.getElementById('lecture-theatre-details').style.display = 'none';
+    document.getElementById('academic-block-details').style.display = 'none';
+    document.getElementById('office-details').style.display = 'none';
+    document.getElementById('new-block-details').style.display = 'none';
+    document.getElementById('location-summary').style.display = 'none';
     
-    // Reset all selects
-    if (document.getElementById('main-location')) document.getElementById('main-location').value = '';
-    if (document.getElementById('new-location')) document.getElementById('new-location').value = '';
-    if (document.getElementById('lecture-theatre')) document.getElementById('lecture-theatre').value = '';
-    if (document.getElementById('academic-block')) document.getElementById('academic-block').value = '';
-    if (document.getElementById('lecture-room')) document.getElementById('lecture-room').value = '';
-    if (document.getElementById('block-room')) document.getElementById('block-room').value = '';
-    if (document.getElementById('new-room')) document.getElementById('new-room').value = '';
+    // Reset all fields
+    resetLocationFields();
     
+    // Show appropriate campus locations
     if (campus === 'main') {
-        document.getElementById('main-campus-options').style.display = 'block';
+        document.getElementById('main-campus-locations').style.display = 'block';
     } else if (campus === 'new') {
-        document.getElementById('new-campus-options').style.display = 'block';
+        document.getElementById('new-campus-locations').style.display = 'block';
     }
+}
+
+function resetLocationFields() {
+    // Reset all select and input fields
+    const selects = ['main-location', 'new-location', 'lecture-theatre', 'academic-block'];
+    const inputs = ['lecture-room', 'academic-room', 'office-number', 'new-block-room', 'other-location'];
+    
+    selects.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
 }
 
 function updateMainLocationDetails() {
     const location = document.getElementById('main-location').value;
+    selectedSpecificLocation = location;
     
-    // Hide all specific option divs
-    document.getElementById('lecture-theatre-options').style.display = 'none';
-    document.getElementById('academic-blocks-options').style.display = 'none';
-    document.getElementById('room-number-container').style.display = 'none';
-    document.getElementById('lecture-room-number').style.display = 'none';
-    document.getElementById('block-room-number').style.display = 'none';
+    // Hide all detail sections
+    document.getElementById('lecture-theatre-details').style.display = 'none';
+    document.getElementById('academic-block-details').style.display = 'none';
+    document.getElementById('office-details').style.display = 'none';
     
-    // Reset values
-    if (document.getElementById('lecture-theatre')) document.getElementById('lecture-theatre').value = '';
-    if (document.getElementById('academic-block')) document.getElementById('academic-block').value = '';
-    if (document.getElementById('lecture-room')) document.getElementById('lecture-room').value = '';
-    if (document.getElementById('block-room')) document.getElementById('block-room').value = '';
+    // Reset room fields
+    document.getElementById('lecture-room').value = '';
+    document.getElementById('academic-room').value = '';
+    document.getElementById('office-number').value = '';
     
     if (location === 'lecture-theatre') {
-        document.getElementById('lecture-theatre-options').style.display = 'block';
+        document.getElementById('lecture-theatre-details').style.display = 'block';
     } else if (location === 'academic-blocks') {
-        document.getElementById('academic-blocks-options').style.display = 'block';
+        document.getElementById('academic-block-details').style.display = 'block';
     } else if (location === 'offices') {
-        document.getElementById('room-number-container').style.display = 'block';
-    }
-}
-
-function updateLectureTheatreDetails() {
-    const theatre = document.getElementById('lecture-theatre').value;
-    if (theatre) {
-        document.getElementById('lecture-room-number').style.display = 'block';
-    } else {
-        document.getElementById('lecture-room-number').style.display = 'none';
-    }
-}
-
-function updateBlockDetails() {
-    const block = document.getElementById('academic-block').value;
-    if (block) {
-        document.getElementById('block-room-number').style.display = 'block';
-    } else {
-        document.getElementById('block-room-number').style.display = 'none';
+        document.getElementById('office-details').style.display = 'block';
+    } else if (location) {
+        // For simple locations (reception, labs, cafeteria), show summary immediately
+        updateLocationSummary();
     }
 }
 
 function updateNewLocationDetails() {
     const location = document.getElementById('new-location').value;
+    selectedSpecificLocation = location;
+    
+    // Hide new block details
+    document.getElementById('new-block-details').style.display = 'none';
+    document.getElementById('new-block-room').value = '';
+    
     if (location === 'block-a' || location === 'block-b') {
-        document.getElementById('new-campus-room').style.display = 'block';
-    } else {
-        document.getElementById('new-campus-room').style.display = 'none';
+        document.getElementById('new-block-details').style.display = 'block';
+    } else if (location === 'library') {
+        // Library doesn't need room number, show summary immediately
+        updateLocationSummary();
     }
+}
+
+function updateLectureTheatreRoom() {
+    const theatre = document.getElementById('lecture-theatre').value;
+    if (theatre) {
+        document.getElementById('lecture-room-field').style.display = 'block';
+    } else {
+        document.getElementById('lecture-room-field').style.display = 'none';
+        document.getElementById('lecture-room').value = '';
+    }
+}
+
+function updateAcademicBlockRoom() {
+    const block = document.getElementById('academic-block').value;
+    if (block) {
+        document.getElementById('academic-room-field').style.display = 'block';
+    } else {
+        document.getElementById('academic-room-field').style.display = 'none';
+        document.getElementById('academic-room').value = '';
+    }
+}
+
+function updateLocationSummary() {
+    const summary = document.getElementById('location-summary');
+    const summaryText = document.getElementById('selected-location-text');
+    
+    let locationString = buildLocationString();
+    
+    if (locationString) {
+        summaryText.textContent = locationString;
+        summary.style.display = 'block';
+    } else {
+        summary.style.display = 'none';
+    }
+}
+
+function buildLocationString() {
+    const campus = document.getElementById('campus-select').value;
+    const mainLocation = document.getElementById('main-location')?.value || '';
+    const newLocation = document.getElementById('new-location')?.value || '';
+    const lectureTheatre = document.getElementById('lecture-theatre')?.value || '';
+    const lectureRoom = document.getElementById('lecture-room')?.value || '';
+    const academicBlock = document.getElementById('academic-block')?.value || '';
+    const academicRoom = document.getElementById('academic-room')?.value || '';
+    const officeNumber = document.getElementById('office-number')?.value || '';
+    const newBlockRoom = document.getElementById('new-block-room')?.value || '';
+    const otherLocation = document.getElementById('other-location')?.value || '';
+    
+    if (otherLocation) {
+        return otherLocation;
+    }
+    
+    if (!campus) return '';
+    
+    let location = campus === 'main' ? 'Main Campus' : 'New Campus';
+    
+    if (campus === 'main') {
+        if (mainLocation === 'reception') location += ' - Reception';
+        else if (mainLocation === 'labs') location += ' - Labs 1-12';
+        else if (mainLocation === 'cafeteria') location += ' - Cafeteria';
+        else if (mainLocation === 'offices') {
+            location += ' - Offices';
+            if (officeNumber) location += ` (${officeNumber})`;
+        }
+        else if (mainLocation === 'lecture-theatre') {
+            if (lectureTheatre) {
+                location += ` - ${lectureTheatre}`;
+                if (lectureRoom) location += ` (Room ${lectureRoom})`;
+            }
+        }
+        else if (mainLocation === 'academic-blocks') {
+            if (academicBlock) {
+                location += ` - Block ${academicBlock}`;
+                if (academicRoom) location += ` (Room ${academicRoom})`;
+            }
+        }
+    } else if (campus === 'new') {
+        if (newLocation === 'library') location += ' - Library';
+        else if (newLocation === 'block-a') {
+            location += ' - Block A';
+            if (newBlockRoom) location += ` (Room ${newBlockRoom})`;
+        }
+        else if (newLocation === 'block-b') {
+            location += ' - Block B';
+            if (newBlockRoom) location += ` (Room ${newBlockRoom})`;
+        }
+    }
+    
+    return location;
 }
 
 // Confirm delivery
 function confirmDelivery() {
-    // Get all values
-    const campus = document.getElementById('campus-select').value;
-    const mainLocation = document.getElementById('main-location') ? document.getElementById('main-location').value : '';
-    const lectureTheatre = document.getElementById('lecture-theatre') ? document.getElementById('lecture-theatre').value : '';
-    const lectureRoom = document.getElementById('lecture-room') ? document.getElementById('lecture-room').value : '';
-    const academicBlock = document.getElementById('academic-block') ? document.getElementById('academic-block').value : '';
-    const blockRoom = document.getElementById('block-room') ? document.getElementById('block-room').value : '';
-    const newLocation = document.getElementById('new-location') ? document.getElementById('new-location').value : '';
-    const newRoom = document.getElementById('new-room') ? document.getElementById('new-room').value : '';
-    const otherLocation = document.getElementById('other-location').value;
+    const locationString = buildLocationString();
     
-    let location = '';
-    
-    // Debug: Log all values
-    console.log('Campus:', campus);
-    console.log('Main Location:', mainLocation);
-    console.log('Other Location:', otherLocation);
-    
-    // Check if any location is selected
-    if (!campus && !otherLocation) {
-        alert('Please select a campus or specify a location');
+    if (!locationString || locationString === 'Main Campus' || locationString === 'New Campus') {
+        alert('Please select a complete delivery location (campus and specific location)');
         return;
     }
     
-    // Handle other location first
-    if (otherLocation && otherLocation.trim() !== '') {
-        location = otherLocation.trim();
-    } 
-    // Handle main campus
-    else if (campus === 'main') {
-        if (!mainLocation) {
-            alert('Please select a main campus location');
-            return;
-        }
-        
-        if (mainLocation === 'reception') {
-            location = 'Main Campus - Reception';
-        } 
-        else if (mainLocation === 'labs') {
-            location = 'Main Campus - Labs 1-12 (No eating/drinking)';
-        } 
-        else if (mainLocation === 'cafeteria') {
-            location = 'Main Campus - Cafeteria';
-        } 
-        else if (mainLocation === 'offices') {
-            location = 'Main Campus - Offices';
-            if (document.getElementById('room-number').value) {
-                location += ' - Office ' + document.getElementById('room-number').value;
-            }
-        } 
-        else if (mainLocation === 'lecture-theatre') {
-            if (!lectureTheatre) {
-                alert('Please select a lecture theatre');
-                return;
-            }
-            location = 'Main Campus - ' + lectureTheatre;
-            if (lectureRoom) {
-                location += ' (Room ' + lectureRoom + ')';
-            }
-        } 
-        else if (mainLocation === 'academic-blocks') {
-            if (!academicBlock) {
-                alert('Please select an academic block');
-                return;
-            }
-            location = 'Main Campus - Block ' + academicBlock;
-            if (blockRoom) {
-                location += ' (Room ' + blockRoom + ')';
-            }
-        }
-    } 
-    // Handle new campus
-    else if (campus === 'new') {
-        if (!newLocation) {
-            alert('Please select a new campus location');
-            return;
-        }
-        
-        if (newLocation === 'library') {
-            location = 'New Campus - Library';
-        } 
-        else if (newLocation === 'block-a') {
-            location = 'New Campus - Block A';
-            if (newRoom) {
-                location += ' (Room ' + newRoom + ')';
-            }
-        } 
-        else if (newLocation === 'block-b') {
-            location = 'New Campus - Block B';
-            if (newRoom) {
-                location += ' (Room ' + newRoom + ')';
-            }
-        }
-    }
-    
-    // Final check
-    if (!location || location === '') {
-        alert('Please complete all location selections');
-        return;
-    }
-    
-    console.log('Final location:', location);
-    deliveryLocation = location;
+    deliveryLocation = locationString;
     closeLocationPopup();
     completeOrder();
 }
@@ -464,38 +464,46 @@ function closeLocationPopup() {
         popup.style.display = 'none';
     }
     
-    // Reset all form fields safely
-    const fields = [
-        'campus-select', 'main-location', 'new-location', 'lecture-theatre', 
-        'academic-block', 'lecture-room', 'block-room', 'new-room', 
-        'room-number', 'other-location'
-    ];
+    // Reset all fields
+    resetLocationFields();
     
-    fields.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            if (element.tagName === 'SELECT') {
-                element.value = '';
-            } else if (element.tagName === 'INPUT') {
-                element.value = '';
-            }
-        }
-    });
-    
-    // Hide all dynamic sections
+    // Hide all sections
     const sections = [
-        'main-campus-options', 'new-campus-options', 'lecture-theatre-options',
-        'academic-blocks-options', 'lecture-room-number', 'block-room-number',
-        'new-campus-room', 'room-number-container'
+        'main-campus-locations', 'new-campus-locations', 'lecture-theatre-details',
+        'academic-block-details', 'office-details', 'new-block-details',
+        'lecture-room-field', 'academic-room-field', 'location-summary'
     ];
     
     sections.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.style.display = 'none';
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+    
+    // Reset campus select
+    const campusSelect = document.getElementById('campus-select');
+    if (campusSelect) campusSelect.value = '';
+    
+    selectedCampus = '';
+    selectedSpecificLocation = '';
+    selectedRoom = '';
+}
+
+// Add event listeners to update summary when any field changes
+document.addEventListener('DOMContentLoaded', function() {
+    const fields = [
+        'campus-select', 'main-location', 'new-location', 'lecture-theatre',
+        'academic-block', 'lecture-room', 'academic-room', 'office-number',
+        'new-block-room', 'other-location'
+    ];
+    
+    fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', updateLocationSummary);
+            el.addEventListener('keyup', updateLocationSummary);
         }
     });
-}
+});
 // Rating functions
 function setRating(rating) {
     currentRating = rating;
