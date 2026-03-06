@@ -20,22 +20,77 @@ let currentCoffeeType = '';
 let currentSizes = [];
 
 // Check if first time visitor
-if (!localStorage.getItem('hasVisited')) {
-    window.onload = function() {
-        document.getElementById('role-popup').style.display = 'flex';
-    };
+document.addEventListener('DOMContentLoaded', function() {
+    const savedRole = localStorage.getItem('userRole');
+    if (savedRole) {
+        userRole = savedRole;
+    }
+    
+    // Show role popup for first time visitors
+    if (!localStorage.getItem('hasVisited')) {
+        setTimeout(() => {
+            const popup = document.getElementById('role-popup');
+            if (popup) popup.style.display = 'flex';
+        }, 500);
+    }
+    
+    // Initialize all event listeners
+    initializeEventListeners();
+});
+
+function initializeEventListeners() {
+    // Add click handlers to coffee items
+    document.querySelectorAll('.coffee-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't trigger if clicking the button
+            if (e.target.closest('.add-btn')) return;
+            
+            // Get data from the clicked item
+            const name = this.querySelector('.coffee-details h5')?.textContent;
+            const priceText = this.querySelector('.price')?.textContent;
+            const price = parseFloat(priceText?.replace('P', '').trim() || '0');
+            
+            // Determine type from name
+            let type = 'regular';
+            if (name?.includes('Latte') && !name?.includes('Chai')) type = 'latte';
+            else if (name?.includes('Milo')) type = 'milo';
+            else if (name?.includes('Milkshake')) type = 'milkshake';
+            else if (name?.includes('Single Espresso')) type = 'single';
+            else if (name?.includes('Double Espresso')) type = 'double';
+            
+            showSizeOptions(name, price, type);
+        });
+    });
+    
+    // Add location summary update to all relevant fields
+    const locationFields = [
+        'campus-select', 'main-location', 'new-location', 'lab-number',
+        'academic-block-letter', 'academic-room', 'lecture-theatre',
+        'lecture-room', 'office-number', 'new-block-room', 'other-location'
+    ];
+    
+    locationFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', updateLocationSummary);
+            el.addEventListener('keyup', updateLocationSummary);
+        }
+    });
 }
 
 // Category toggle function
 function toggleCategory(categoryId) {
     const category = document.getElementById(categoryId);
-    const toggle = event.currentTarget.querySelector('.category-toggle');
+    const header = event.currentTarget;
+    const toggle = header.querySelector('.category-toggle');
     
-    category.classList.toggle('collapsed');
-    if (category.classList.contains('collapsed')) {
-        toggle.style.transform = 'rotate(-90deg)';
-    } else {
-        toggle.style.transform = 'rotate(0deg)';
+    if (category && toggle) {
+        category.classList.toggle('collapsed');
+        if (category.classList.contains('collapsed')) {
+            toggle.style.transform = 'rotate(-90deg)';
+        } else {
+            toggle.style.transform = 'rotate(0deg)';
+        }
     }
 }
 
@@ -51,6 +106,8 @@ function showSizeOptions(name, price, type) {
     const dropdown = document.getElementById('size-dropdown');
     const priceDisplay = document.getElementById('selected-size-price');
     const addBtn = document.getElementById('add-size-btn');
+    
+    if (!popup || !title || !dropdown || !priceDisplay || !addBtn) return;
     
     currentCoffeeName = name;
     currentCoffeeType = type;
@@ -132,6 +189,9 @@ function updateSizePrice() {
     const dropdown = document.getElementById('size-dropdown');
     const priceDisplay = document.getElementById('selected-size-price');
     const addBtn = document.getElementById('add-size-btn');
+    
+    if (!dropdown || !priceDisplay || !addBtn) return;
+    
     const selectedPrice = dropdown.value;
     
     if (selectedPrice) {
@@ -145,6 +205,8 @@ function updateSizePrice() {
 
 function addToOrderWithSize() {
     const dropdown = document.getElementById('size-dropdown');
+    if (!dropdown) return;
+    
     const selectedIndex = dropdown.selectedIndex;
     const selectedPrice = parseFloat(dropdown.value);
     
@@ -175,7 +237,8 @@ function addToOrderWithSize() {
 }
 
 function closeSizePopup() {
-    document.getElementById('size-popup').style.display = 'none';
+    const popup = document.getElementById('size-popup');
+    if (popup) popup.style.display = 'none';
 }
 
 // Role selection
@@ -183,8 +246,12 @@ function selectRole(role) {
     userRole = role;
     localStorage.setItem('userRole', role);
     localStorage.setItem('hasVisited', 'true');
-    document.getElementById('role-popup').style.display = 'none';
+    
+    const popup = document.getElementById('role-popup');
+    if (popup) popup.style.display = 'none';
+    
     updateOrderDisplay();
+    showNotification(`Welcome ${role}!`);
 }
 
 // Add to order
@@ -208,7 +275,9 @@ function addToOrder(name, price) {
     
     closeSizePopup();
     updateOrderDisplay();
-    document.getElementById('checkout-btn').disabled = false;
+    
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) checkoutBtn.disabled = false;
     
     // Show confirmation message
     showNotification(`${name} added to order!`);
@@ -246,14 +315,18 @@ function updateQuantity(name, change) {
         }
     }
     updateOrderDisplay();
-    document.getElementById('checkout-btn').disabled = order.length === 0;
+    
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) checkoutBtn.disabled = order.length === 0;
 }
 
 // Remove item
 function removeItem(name) {
     order = order.filter(item => item.name !== name);
     updateOrderDisplay();
-    document.getElementById('checkout-btn').disabled = order.length === 0;
+    
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) checkoutBtn.disabled = order.length === 0;
 }
 
 // Update order display
@@ -305,13 +378,17 @@ function checkout() {
         showNotification('Your order is empty!');
         return;
     }
-    document.getElementById('delivery-popup').style.display = 'flex';
+    
+    const popup = document.getElementById('delivery-popup');
+    if (popup) popup.style.display = 'flex';
 }
 
 // Delivery selection
 function selectDelivery(method) {
     deliveryMethod = method;
-    document.getElementById('delivery-popup').style.display = 'none';
+    
+    const deliveryPopup = document.getElementById('delivery-popup');
+    if (deliveryPopup) deliveryPopup.style.display = 'none';
     
     if (method === 'collect') {
         // For collection, no location needed
@@ -319,38 +396,45 @@ function selectDelivery(method) {
         completeOrder();
     } else if (method === 'delivery') {
         // For delivery, show location popup
-        document.getElementById('location-popup').style.display = 'flex';
+        const locationPopup = document.getElementById('location-popup');
+        if (locationPopup) locationPopup.style.display = 'flex';
     }
 }
 
 // Show delivery location
 function showDeliveryLocation() {
-    document.getElementById('delivery-popup').style.display = 'none';
-    document.getElementById('location-popup').style.display = 'flex';
+    const deliveryPopup = document.getElementById('delivery-popup');
+    if (deliveryPopup) deliveryPopup.style.display = 'none';
+    
+    const locationPopup = document.getElementById('location-popup');
+    if (locationPopup) locationPopup.style.display = 'flex';
 }
 
 // Campus location functions
 function updateCampusLocation() {
-    const campus = document.getElementById('campus-select').value;
+    const campus = document.getElementById('campus-select');
+    if (!campus) return;
+    
+    const selectedCampus = campus.value;
     
     // Hide all sections
-    document.getElementById('main-campus-locations').style.display = 'none';
-    document.getElementById('new-campus-locations').style.display = 'none';
-    document.getElementById('lab-numbers').style.display = 'none';
-    document.getElementById('academic-block-select').style.display = 'none';
-    document.getElementById('lecture-theatre-details').style.display = 'none';
-    document.getElementById('office-details').style.display = 'none';
-    document.getElementById('new-block-details').style.display = 'none';
-    document.getElementById('academic-room-field').style.display = 'none';
-    document.getElementById('lecture-room-field').style.display = 'none';
+    document.getElementById('main-campus-locations')?.style.display = 'none';
+    document.getElementById('new-campus-locations')?.style.display = 'none';
+    document.getElementById('lab-numbers')?.style.display = 'none';
+    document.getElementById('academic-block-select')?.style.display = 'none';
+    document.getElementById('lecture-theatre-details')?.style.display = 'none';
+    document.getElementById('office-details')?.style.display = 'none';
+    document.getElementById('new-block-details')?.style.display = 'none';
+    document.getElementById('academic-room-field')?.style.display = 'none';
+    document.getElementById('lecture-room-field')?.style.display = 'none';
     
     // Reset all fields
     resetLocationFields();
     
     // Show appropriate campus locations
-    if (campus === 'main') {
+    if (selectedCampus === 'main') {
         document.getElementById('main-campus-locations').style.display = 'block';
-    } else if (campus === 'new') {
+    } else if (selectedCampus === 'new') {
         document.getElementById('new-campus-locations').style.display = 'block';
     }
 }
@@ -376,68 +460,102 @@ function resetLocationFields() {
 }
 
 function updateMainLocationDetails() {
-    const location = document.getElementById('main-location').value;
+    const location = document.getElementById('main-location');
+    if (!location) return;
+    
+    const selectedLocation = location.value;
     
     // Hide all detail sections
-    document.getElementById('lab-numbers').style.display = 'none';
-    document.getElementById('academic-block-select').style.display = 'none';
-    document.getElementById('lecture-theatre-details').style.display = 'none';
-    document.getElementById('office-details').style.display = 'none';
-    document.getElementById('academic-room-field').style.display = 'none';
-    document.getElementById('lecture-room-field').style.display = 'none';
+    document.getElementById('lab-numbers')?.style.display = 'none';
+    document.getElementById('academic-block-select')?.style.display = 'none';
+    document.getElementById('lecture-theatre-details')?.style.display = 'none';
+    document.getElementById('office-details')?.style.display = 'none';
+    document.getElementById('academic-room-field')?.style.display = 'none';
+    document.getElementById('lecture-room-field')?.style.display = 'none';
     
     // Reset relevant fields
-    document.getElementById('lab-number').value = '';
-    document.getElementById('academic-block-letter').value = '';
-    document.getElementById('academic-room').value = '';
-    document.getElementById('lecture-theatre').value = '';
-    document.getElementById('lecture-room').value = '';
-    document.getElementById('office-number').value = '';
+    const labNumber = document.getElementById('lab-number');
+    if (labNumber) labNumber.value = '';
     
-    if (location === 'labs') {
+    const academicBlock = document.getElementById('academic-block-letter');
+    if (academicBlock) academicBlock.value = '';
+    
+    const academicRoom = document.getElementById('academic-room');
+    if (academicRoom) academicRoom.value = '';
+    
+    const lectureTheatre = document.getElementById('lecture-theatre');
+    if (lectureTheatre) lectureTheatre.value = '';
+    
+    const lectureRoom = document.getElementById('lecture-room');
+    if (lectureRoom) lectureRoom.value = '';
+    
+    const officeNumber = document.getElementById('office-number');
+    if (officeNumber) officeNumber.value = '';
+    
+    if (selectedLocation === 'labs') {
         document.getElementById('lab-numbers').style.display = 'block';
-    } else if (location === 'academic-blocks') {
+    } else if (selectedLocation === 'academic-blocks') {
         document.getElementById('academic-block-select').style.display = 'block';
-    } else if (location === 'lecture-theatre') {
+    } else if (selectedLocation === 'lecture-theatre') {
         document.getElementById('lecture-theatre-details').style.display = 'block';
-    } else if (location === 'offices') {
+    } else if (selectedLocation === 'offices') {
         document.getElementById('office-details').style.display = 'block';
     }
 }
 
 function updateAcademicBlockRoom() {
-    const block = document.getElementById('academic-block-letter').value;
-    if (block) {
+    const block = document.getElementById('academic-block-letter');
+    if (!block) return;
+    
+    const selectedBlock = block.value;
+    
+    if (selectedBlock) {
         document.getElementById('academic-room-field').style.display = 'block';
     } else {
         document.getElementById('academic-room-field').style.display = 'none';
-        document.getElementById('academic-room').value = '';
+        const academicRoom = document.getElementById('academic-room');
+        if (academicRoom) academicRoom.value = '';
     }
 }
 
 function updateLectureTheatreRoom() {
-    const theatre = document.getElementById('lecture-theatre').value;
-    if (theatre) {
+    const theatre = document.getElementById('lecture-theatre');
+    if (!theatre) return;
+    
+    const selectedTheatre = theatre.value;
+    
+    if (selectedTheatre) {
         document.getElementById('lecture-room-field').style.display = 'block';
     } else {
         document.getElementById('lecture-room-field').style.display = 'none';
-        document.getElementById('lecture-room').value = '';
+        const lectureRoom = document.getElementById('lecture-room');
+        if (lectureRoom) lectureRoom.value = '';
     }
 }
 
 function updateNewLocationDetails() {
-    const location = document.getElementById('new-location').value;
+    const location = document.getElementById('new-location');
+    if (!location) return;
+    
+    const selectedLocation = location.value;
     
     document.getElementById('new-block-details').style.display = 'none';
-    document.getElementById('new-block-room').value = '';
     
-    if (location === 'block-a' || location === 'block-b') {
+    const newBlockRoom = document.getElementById('new-block-room');
+    if (newBlockRoom) newBlockRoom.value = '';
+    
+    if (selectedLocation === 'block-a' || selectedLocation === 'block-b') {
         document.getElementById('new-block-details').style.display = 'block';
     }
 }
 
 function updateLocationSummary() {
-    const campus = document.getElementById('campus-select').value;
+    const summary = document.getElementById('location-summary');
+    const summaryText = document.getElementById('selected-location-text');
+    
+    if (!summary || !summaryText) return;
+    
+    const campus = document.getElementById('campus-select')?.value;
     const mainLocation = document.getElementById('main-location')?.value;
     const newLocation = document.getElementById('new-location')?.value;
     const labNumber = document.getElementById('lab-number')?.value;
@@ -479,13 +597,10 @@ function updateLocationSummary() {
         }
     }
     
-    const summary = document.getElementById('location-summary');
-    const summaryText = document.getElementById('selected-location-text');
-    
-    if (locationString && summary && summaryText) {
+    if (locationString) {
         summaryText.textContent = locationString;
         summary.style.display = 'block';
-    } else if (summary) {
+    } else {
         summary.style.display = 'none';
     }
 }
@@ -493,7 +608,7 @@ function updateLocationSummary() {
 // Confirm delivery
 function confirmDelivery() {
     // Get all values
-    const campus = document.getElementById('campus-select').value;
+    const campus = document.getElementById('campus-select')?.value;
     const mainLocation = document.getElementById('main-location')?.value;
     const newLocation = document.getElementById('new-location')?.value;
     const labNumber = document.getElementById('lab-number')?.value;
@@ -597,7 +712,8 @@ function confirmDelivery() {
 
 // Close location popup
 function closeLocationPopup() {
-    document.getElementById('location-popup').style.display = 'none';
+    const popup = document.getElementById('location-popup');
+    if (popup) popup.style.display = 'none';
     
     // Reset all fields
     resetLocationFields();
@@ -606,7 +722,8 @@ function closeLocationPopup() {
     const sections = [
         'main-campus-locations', 'new-campus-locations', 'lab-numbers',
         'academic-block-select', 'lecture-theatre-details', 'office-details',
-        'new-block-details', 'academic-room-field', 'lecture-room-field'
+        'new-block-details', 'academic-room-field', 'lecture-room-field',
+        'location-summary'
     ];
     
     sections.forEach(id => {
@@ -615,11 +732,8 @@ function closeLocationPopup() {
     });
     
     // Reset campus select
-    document.getElementById('campus-select').value = '';
-    
-    // Hide summary
-    const summary = document.getElementById('location-summary');
-    if (summary) summary.style.display = 'none';
+    const campusSelect = document.getElementById('campus-select');
+    if (campusSelect) campusSelect.value = '';
 }
 
 // Complete order function
@@ -652,19 +766,21 @@ function completeOrder() {
     const studentCallSection = document.getElementById('student-call-section');
     const staffMessage = document.getElementById('staff-message');
     
-    let deliveryText = '';
-    if (deliveryMethod === 'collect') {
-        deliveryText = 'Please collect your order from Mug Shots counter.';
-    } else {
-        deliveryText = `Your coffee will be delivered to: ${deliveryLocation}`;
+    if (message) {
+        let deliveryText = '';
+        if (deliveryMethod === 'collect') {
+            deliveryText = 'Please collect your order from Mug Shots counter.';
+        } else {
+            deliveryText = `Your coffee will be delivered to: ${deliveryLocation}`;
+        }
+        
+        message.innerHTML = `
+            <strong>Order #${orderData.id}</strong><br>
+            Thank you for ordering from Mug Shots!<br>
+            ${deliveryText}<br>
+            <strong>Total: P ${total.toFixed(2)}</strong>
+        `;
     }
-    
-    message.innerHTML = `
-        <strong>Order #${orderData.id}</strong><br>
-        Thank you for ordering from Mug Shots!<br>
-        ${deliveryText}<br>
-        <strong>Total: P ${total.toFixed(2)}</strong>
-    `;
     
     // Show different options based on user role
     if (userRole === 'student') {
@@ -675,16 +791,20 @@ function completeOrder() {
         if (staffMessage) staffMessage.style.display = 'block';
     }
     
-    document.getElementById('confirmation-popup').style.display = 'flex';
+    const confirmationPopup = document.getElementById('confirmation-popup');
+    if (confirmationPopup) confirmationPopup.style.display = 'flex';
     
     // Clear order
     order = [];
     updateOrderDisplay();
-    document.getElementById('checkout-btn').disabled = true;
+    
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) checkoutBtn.disabled = true;
     
     // Show rating popup after 30 seconds
     setTimeout(() => {
-        document.getElementById('rating-popup').style.display = 'flex';
+        const ratingPopup = document.getElementById('rating-popup');
+        if (ratingPopup) ratingPopup.style.display = 'flex';
     }, 30000);
 }
 
@@ -699,7 +819,11 @@ function setRating(rating) {
             star.classList.remove('active');
         }
     });
-    document.getElementById('selected-rating').textContent = `You rated: ${rating} star${rating > 1 ? 's' : ''}`;
+    
+    const selectedRating = document.getElementById('selected-rating');
+    if (selectedRating) {
+        selectedRating.textContent = `You rated: ${rating} star${rating > 1 ? 's' : ''}`;
+    }
 }
 
 function submitRating() {
@@ -708,7 +832,7 @@ function submitRating() {
         return;
     }
     
-    const review = document.getElementById('review-text').value;
+    const review = document.getElementById('review-text')?.value || '';
     
     const ratings = JSON.parse(localStorage.getItem('ratings') || '[]');
     ratings.push({
@@ -724,33 +848,47 @@ function submitRating() {
 }
 
 function closeRatingPopup() {
-    document.getElementById('rating-popup').style.display = 'none';
-    document.getElementById('review-text').value = '';
+    const popup = document.getElementById('rating-popup');
+    if (popup) popup.style.display = 'none';
+    
+    const reviewText = document.getElementById('review-text');
+    if (reviewText) reviewText.value = '';
+    
     currentRating = 0;
+    
     document.querySelectorAll('.rating-stars span').forEach(star => {
         star.classList.remove('active');
     });
-    document.getElementById('selected-rating').textContent = '';
+    
+    const selectedRating = document.getElementById('selected-rating');
+    if (selectedRating) selectedRating.textContent = '';
 }
 
 function closeConfirmation() {
-    document.getElementById('confirmation-popup').style.display = 'none';
+    const popup = document.getElementById('confirmation-popup');
+    if (popup) popup.style.display = 'none';
 }
 
 // Admin functions
 function showAdminLogin() {
-    document.getElementById('admin-login-popup').style.display = 'flex';
+    const popup = document.getElementById('admin-login-popup');
+    if (popup) popup.style.display = 'flex';
 }
 
 function closeAdminLogin() {
-    document.getElementById('admin-login-popup').style.display = 'none';
-    document.getElementById('admin-username').value = '';
-    document.getElementById('admin-password').value = '';
+    const popup = document.getElementById('admin-login-popup');
+    if (popup) popup.style.display = 'none';
+    
+    const username = document.getElementById('admin-username');
+    const password = document.getElementById('admin-password');
+    
+    if (username) username.value = '';
+    if (password) password.value = '';
 }
 
 function adminLogin() {
-    const username = document.getElementById('admin-username').value;
-    const password = document.getElementById('admin-password').value;
+    const username = document.getElementById('admin-username')?.value;
+    const password = document.getElementById('admin-password')?.value;
     
     const admin = admins.find(a => a.username === username && a.password === password);
     
@@ -758,7 +896,9 @@ function adminLogin() {
         currentAdmin = username;
         closeAdminLogin();
         loadAdminDashboard();
-        document.getElementById('admin-dashboard').style.display = 'flex';
+        
+        const dashboard = document.getElementById('admin-dashboard');
+        if (dashboard) dashboard.style.display = 'flex';
     } else {
         alert('Invalid admin credentials!');
     }
@@ -864,30 +1004,40 @@ function loadAllRatings() {
 function updateRatingSummary() {
     const ratings = JSON.parse(localStorage.getItem('ratings') || '[]');
     
+    const avgRating = document.getElementById('avg-rating');
+    const totalReviews = document.getElementById('total-reviews');
+    
+    if (!avgRating || !totalReviews) return;
+    
     if (ratings.length === 0) {
-        document.getElementById('avg-rating').textContent = '0';
-        document.getElementById('total-reviews').textContent = '0';
+        avgRating.textContent = '0';
+        totalReviews.textContent = '0';
         return;
     }
     
     const avg = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
-    document.getElementById('avg-rating').textContent = avg.toFixed(1);
-    document.getElementById('total-reviews').textContent = ratings.length;
+    avgRating.textContent = avg.toFixed(1);
+    totalReviews.textContent = ratings.length;
 }
 
 function loadStatistics() {
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
     
-    document.getElementById('total-orders').textContent = orders.length;
+    const totalOrders = document.getElementById('total-orders');
+    const totalRevenue = document.getElementById('total-revenue');
+    const totalDiscounts = document.getElementById('total-discounts');
+    const totalDeliveries = document.getElementById('total-deliveries');
     
-    const totalRevenue = orders.reduce((sum, o) => sum + parseFloat(o.total), 0);
-    document.getElementById('total-revenue').textContent = `P ${totalRevenue.toFixed(2)}`;
+    if (totalOrders) totalOrders.textContent = orders.length;
     
-    const totalDiscounts = orders.reduce((sum, o) => sum + parseFloat(o.discount), 0);
-    document.getElementById('total-discounts').textContent = `P ${totalDiscounts.toFixed(2)}`;
+    const revenue = orders.reduce((sum, o) => sum + parseFloat(o.total), 0);
+    if (totalRevenue) totalRevenue.textContent = `P ${revenue.toFixed(2)}`;
     
-    const totalDeliveries = orders.filter(o => o.deliveryMethod === 'delivery').length;
-    document.getElementById('total-deliveries').textContent = totalDeliveries;
+    const discounts = orders.reduce((sum, o) => sum + parseFloat(o.discount), 0);
+    if (totalDiscounts) totalDiscounts.textContent = `P ${discounts.toFixed(2)}`;
+    
+    const deliveries = orders.filter(o => o.deliveryMethod === 'delivery').length;
+    if (totalDeliveries) totalDeliveries.textContent = deliveries;
 }
 
 function loadPopularItems() {
@@ -951,23 +1101,32 @@ function switchAdminTab(tabName) {
     document.querySelectorAll('.admin-tab').forEach(tab => {
         tab.classList.remove('active');
     });
-    event.target.classList.add('active');
+    
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
     
     // Update tab content
     document.querySelectorAll('.admin-tab-content').forEach(content => {
         content.classList.remove('active');
     });
-    document.getElementById(`admin-${tabName}-tab`).classList.add('active');
+    
+    const tabContent = document.getElementById(`admin-${tabName}-tab`);
+    if (tabContent) tabContent.classList.add('active');
 }
 
 function logoutAdmin() {
     currentAdmin = null;
-    document.getElementById('admin-dashboard').style.display = 'none';
+    
+    const dashboard = document.getElementById('admin-dashboard');
+    if (dashboard) dashboard.style.display = 'none';
+    
     showNotification('Logged out successfully');
 }
 
 function closeAdminDashboard() {
-    document.getElementById('admin-dashboard').style.display = 'none';
+    const dashboard = document.getElementById('admin-dashboard');
+    if (dashboard) dashboard.style.display = 'none';
 }
 
 // Close popups when clicking outside
@@ -976,37 +1135,3 @@ window.onclick = function(event) {
         event.target.style.display = 'none';
     }
 }
-
-// Load user role from localStorage on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const savedRole = localStorage.getItem('userRole');
-    if (savedRole) {
-        userRole = savedRole;
-    }
-    
-    // Add location summary update to all relevant fields
-    const locationFields = [
-        'campus-select', 'main-location', 'new-location', 'lab-number',
-        'academic-block-letter', 'academic-room', 'lecture-theatre',
-        'lecture-room', 'office-number', 'new-block-room', 'other-location'
-    ];
-    
-    locationFields.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', updateLocationSummary);
-            el.addEventListener('keyup', updateLocationSummary);
-        }
-    });
-    
-    // Add click handlers to coffee items
-    document.querySelectorAll('.coffee-item').forEach(item => {
-        const addBtn = item.querySelector('.add-btn');
-        if (addBtn) {
-            addBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                // The onclick on the parent div will handle the size selection
-            });
-        }
-    });
-});
