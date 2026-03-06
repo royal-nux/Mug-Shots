@@ -449,8 +449,9 @@ main {
         opacity: 1;
         transform: translateY(0);
     }
-    
-}/* Staff Message */
+}
+
+/* Staff Message */
 .staff-message {
     margin: 1.5rem 0;
     padding: 1rem;
@@ -694,18 +695,6 @@ main {
     margin-right: 0.5rem;
 }
 
-/* Responsive adjustments */
-@media screen and (max-width: 480px) {
-    .location-details {
-        margin: 0.8rem 0 0.8rem 0.8rem;
-        padding-left: 0.8rem;
-    }
-    
-    .location-select, .location-input {
-        padding: 0.7rem;
-        font-size: 0.9rem;
-    }
-}
 .confirm-btn, .submit-rating-btn {
     width: 100%;
     padding: 1rem;
@@ -850,6 +839,168 @@ footer {
     margin-top: 0.3rem;
 }
 
+/* Notification */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    z-index: 2000;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification i {
+    font-size: 1.2rem;
+}
+
+/* Empty order message */
+.empty-order {
+    text-align: center;
+    color: #8b5a2b;
+    padding: 1rem;
+    font-style: italic;
+}
+
+/* No items message */
+.no-items {
+    text-align: center;
+    color: #8b5a2b;
+    padding: 1rem;
+    font-style: italic;
+}
+
+/* Fix for order item names */
+.item-name {
+    font-weight: 500;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.item-price {
+    font-weight: 600;
+    color: #b08b5c;
+    min-width: 70px;
+    text-align: right;
+}
+
+/* Size Selector Styles */
+.size-selector {
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.size-selector label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #3e2c1a;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.size-selector label i {
+    color: #b08b5c;
+    margin-right: 0.5rem;
+}
+
+.size-dropdown {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e6d5b8;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23b08b5c' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.5rem;
+}
+
+.size-dropdown:hover {
+    border-color: #b08b5c;
+}
+
+.size-dropdown:focus {
+    outline: none;
+    border-color: #b08b5c;
+    box-shadow: 0 0 0 3px rgba(176, 139, 92, 0.1);
+}
+
+.size-price {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f5e6d3;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #3e2c1a;
+    text-align: center;
+}
+
+.size-price span {
+    color: #b08b5c;
+    font-size: 1.4rem;
+}
+
+.size-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.size-actions button {
+    flex: 1;
+}
+
+#add-size-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #cccccc;
+}
+
+/* Warning text */
+.warning {
+    color: #dc3545;
+    margin-top: 0.5rem;
+}
+
+.warning i {
+    color: #dc3545;
+}
+
+/* Confirmation message */
+.confirmation-message {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f5e6d3;
+    border-radius: 10px;
+    line-height: 1.8;
+}
+
+/* Success icon */
+.popup-icon.success {
+    color: #28a745;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     main {
@@ -871,7 +1022,9 @@ footer {
     .menu-items {
         grid-template-columns: 1fr;
     }
-    /* ===== RESPONSIVE DESIGN ===== */
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
 /* Base responsive settings */
 html {
     font-size: 16px;
@@ -1121,6 +1274,26 @@ html {
     .logout-btn {
         padding: 0.8rem;
         font-size: 0.9rem;
+    }
+    
+    .size-dropdown {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+        background-size: 1.2rem;
+    }
+    
+    .size-price {
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+    
+    .size-price span {
+        font-size: 1.2rem;
+    }
+    
+    .size-actions {
+        flex-direction: column;
+        gap: 0.5rem;
     }
 }
 
@@ -1373,6 +1546,4 @@ html {
 .admin-dashboard-content::-webkit-scrollbar-thumb {
     background: #b08b5c;
     border-radius: 3px;
-}
-
 }
