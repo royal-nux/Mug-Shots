@@ -386,6 +386,8 @@ function completeOrder() {
     localStorage.setItem('orders', JSON.stringify(orders));
     
     const message = document.getElementById('confirmation-message');
+    const studentCallSection = document.getElementById('student-call-section');
+    const staffMessage = document.getElementById('staff-message');
     let deliveryText = '';
     
     if (deliveryMethod === 'collect') {
@@ -401,6 +403,15 @@ function completeOrder() {
         <strong>Total: P ${total.toFixed(2)}</strong>
     `;
     
+    // Show different options based on user role
+    if (userRole === 'student') {
+        studentCallSection.style.display = 'block';
+        staffMessage.style.display = 'none';
+    } else {
+        studentCallSection.style.display = 'none';
+        staffMessage.style.display = 'block';
+    }
+    
     document.getElementById('confirmation-popup').style.display = 'flex';
     
     order = [];
@@ -410,11 +421,11 @@ function completeOrder() {
     deliveryMethod = null;
     deliveryLocation = null;
     
+    // Show rating popup after 30 seconds (only if user is student, lecturer, or staff)
     setTimeout(() => {
         document.getElementById('rating-popup').style.display = 'flex';
     }, 30000);
 }
-
 // Rating functions
 function setRating(rating) {
     currentRating = rating;
