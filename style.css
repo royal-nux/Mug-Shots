@@ -800,4 +800,508 @@ footer {
     .menu-items {
         grid-template-columns: 1fr;
     }
+    /* ===== RESPONSIVE DESIGN ===== */
+/* Base responsive settings */
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Small phones (portrait) */
+@media screen and (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    header {
+        padding: 1rem 0.5rem;
+    }
+
+    header h1 {
+        font-size: 2.2rem;
+        letter-spacing: 2px;
+    }
+
+    .slogan {
+        font-size: 1.1rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    .admin-login-btn {
+        padding: 0.3rem 1rem;
+        font-size: 0.8rem;
+        margin-top: 0.8rem;
+    }
+
+    main {
+        padding: 0 0.8rem;
+        margin: 1rem auto;
+        gap: 1rem;
+    }
+
+    .menu {
+        padding: 1rem;
+        border-radius: 15px;
+    }
+
+    .menu h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+    }
+
+    .category-header {
+        padding: 0.8rem 1rem;
+    }
+
+    .category-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .category-items {
+        padding: 1rem;
+    }
+
+    .subcategory h4 {
+        font-size: 1rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .menu-items {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+
+    .coffee-item {
+        padding: 0.8rem;
+        gap: 0.8rem;
+    }
+
+    .coffee-image {
+        width: 50px;
+        height: 50px;
+    }
+
+    .coffee-details h5 {
+        font-size: 0.95rem;
+    }
+
+    .coffee-details p {
+        font-size: 0.75rem;
+    }
+
+    .price {
+        font-size: 0.85rem;
+    }
+
+    .add-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    .current-order {
+        padding: 1rem;
+        position: relative;
+        top: 0;
+    }
+
+    .current-order h2 {
+        font-size: 1.4rem;
+    }
+
+    .order-item {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .order-item-controls button {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+    }
+
+    .order-summary p {
+        font-size: 0.9rem;
+    }
+
+    #checkout-btn {
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+
+    /* Popup adjustments for mobile */
+    .popup-content {
+        padding: 1.2rem;
+        width: 92%;
+        max-height: 85vh;
+    }
+
+    .popup-content h2 {
+        font-size: 1.4rem;
+    }
+
+    .popup-logo {
+        width: 60px;
+        height: 60px;
+    }
+
+    .popup-icon {
+        font-size: 2.2rem;
+    }
+
+    .role-btn, .delivery-btn, .confirm-btn, .submit-rating-btn, .later-btn {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+        margin: 0.4rem 0;
+    }
+
+    .location-select, .admin-input, #room-number, #other-location, #review-text {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    .size-btn {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .rating-stars {
+        font-size: 2rem;
+    }
+
+    .call-btn {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .footer-content {
+        padding: 1rem 0.5rem;
+    }
+
+    .footer-logo {
+        width: 35px;
+        height: 35px;
+    }
+
+    .contact-info {
+        font-size: 0.85rem;
+    }
+
+    /* Admin dashboard mobile */
+    .admin-dashboard-content {
+        padding: 1rem;
+        width: 95%;
+    }
+
+    .admin-tabs {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .admin-tab {
+        width: 100%;
+        padding: 0.6rem;
+        font-size: 0.85rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .stat-card {
+        padding: 0.8rem;
+    }
+
+    .stat-card i {
+        font-size: 1.5rem;
+    }
+
+    .stat-card h4 {
+        font-size: 0.8rem;
+    }
+
+    .stat-card p {
+        font-size: 1.1rem;
+    }
+
+    .admin-list {
+        max-height: 150px;
+    }
+
+    .admin-list-item {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .logout-btn {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Medium phones and small tablets */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+    html {
+        font-size: 15px;
+    }
+
+    main {
+        padding: 0 1.2rem;
+        grid-template-columns: 1fr;
+    }
+
+    .menu {
+        padding: 1.5rem;
+    }
+
+    .menu-items {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .current-order {
+        position: relative;
+        top: 0;
+    }
+
+    .popup-content {
+        width: 85%;
+        padding: 1.8rem;
+    }
+
+    .admin-tabs {
+        flex-wrap: wrap;
+    }
+
+    .admin-tab {
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+}
+
+/* Tablets and small desktops */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    main {
+        padding: 0 1.5rem;
+        gap: 1.5rem;
+    }
+
+    .menu-items {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .popup-content {
+        max-width: 600px;
+    }
+}
+
+/* Large desktops */
+@media screen and (min-width: 1025px) and (max-width: 1440px) {
+    main {
+        padding: 0 2rem;
+        max-width: 1400px;
+    }
+
+    .menu-items {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Extra large desktops */
+@media screen and (min-width: 1441px) {
+    main {
+        max-width: 1600px;
+        margin: 3rem auto;
+        padding: 0 3rem;
+    }
+
+    .menu-items {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .menu h2 {
+        font-size: 2.4rem;
+    }
+
+    .coffee-item {
+        padding: 1.2rem;
+    }
+}
+
+/* Landscape mode for phones */
+@media screen and (max-width: 900px) and (orientation: landscape) {
+    .popup-content {
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+
+    .admin-dashboard-content {
+        max-height: 85vh;
+    }
+
+    .admin-list {
+        max-height: 150px;
+    }
+}
+
+/* High-resolution screens */
+@media screen and (min-width: 1920px) {
+    html {
+        font-size: 18px;
+    }
+
+    main {
+        max-width: 1800px;
+    }
+
+    .menu-items {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets for mobile */
+    .add-btn, 
+    .order-item-controls button,
+    .category-header,
+    .role-btn,
+    .delivery-btn,
+    .confirm-btn,
+    .later-btn,
+    .admin-tab,
+    .logout-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Remove hover effects on touch devices */
+    .coffee-item:hover {
+        transform: none;
+    }
+
+    .add-btn:hover {
+        transform: none;
+    }
+
+    /* Improve scrolling on touch */
+    .menu, 
+    .current-order,
+    .popup-content,
+    .admin-dashboard-content {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Fix for notched phones (iPhone X and newer) */
+@supports (padding: max(0px)) {
+    header {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+        padding-top: max(1rem, env(safe-area-inset-top));
+    }
+
+    footer {
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+
+    .popup-content {
+        margin-left: env(safe-area-inset-left);
+        margin-right: env(safe-area-inset-right);
+    }
+}
+
+/* Print styles */
+@media print {
+    .coffee-bg,
+    .admin-login-btn,
+    .add-btn,
+    #checkout-btn,
+    .popup,
+    footer {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .menu,
+    .current-order {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}
+
+/* Loading state */
+.loading {
+    opacity: 0.5;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    margin: -15px 0 0 -15px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #b08b5c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Better scrolling */
+.menu, 
+.current-order,
+.popup-content,
+.admin-dashboard-content {
+    scrollbar-width: thin;
+    scrollbar-color: #b08b5c #f5e6d3;
+}
+
+.menu::-webkit-scrollbar,
+.current-order::-webkit-scrollbar,
+.popup-content::-webkit-scrollbar,
+.admin-dashboard-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.menu::-webkit-scrollbar-track,
+.current-order::-webkit-scrollbar-track,
+.popup-content::-webkit-scrollbar-track,
+.admin-dashboard-content::-webkit-scrollbar-track {
+    background: #f5e6d3;
+}
+
+.menu::-webkit-scrollbar-thumb,
+.current-order::-webkit-scrollbar-thumb,
+.popup-content::-webkit-scrollbar-thumb,
+.admin-dashboard-content::-webkit-scrollbar-thumb {
+    background: #b08b5c;
+    border-radius: 3px;
+}
+
 }
