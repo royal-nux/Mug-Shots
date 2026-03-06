@@ -14,6 +14,11 @@ const admins = [
 
 let currentAdmin = null;
 
+// Size selection variables
+let currentCoffeeName = '';
+let currentCoffeeType = '';
+let currentSizes = [];
+
 // Check if first time visitor
 if (!localStorage.getItem('hasVisited')) {
     window.onload = function() {
@@ -43,40 +48,58 @@ function showSizeOptions(name, price, type) {
     
     const popup = document.getElementById('size-popup');
     const title = document.getElementById('size-popup-title');
-    const options = document.getElementById('size-options');
+    const dropdown = document.getElementById('size-dropdown');
+    const priceDisplay = document.getElementById('selected-size-price');
+    const addBtn = document.getElementById('add-size-btn');
+    
+    currentCoffeeName = name;
+    currentCoffeeType = type;
     
     title.textContent = `Select Size - ${name}`;
     
+    // Clear dropdown
+    dropdown.innerHTML = '<option value="">-- Select Size --</option>';
+    
+    // Define sizes based on coffee type
     if (type === 'latte') {
-        options.innerHTML = `
-            <button class="size-btn" onclick="addToOrder('Cafe Latte (Short)', 18.00); event.stopPropagation();">
-                <span>Short (Small)</span>
-                <span>P 18.00</span>
-            </button>
-            <button class="size-btn" onclick="addToOrder('Cafe Latte (Tall)', 23.00); event.stopPropagation();">
-                <span>Tall (Large)</span>
-                <span>P 23.00</span>
-            </button>
-        `;
+        currentSizes = [
+            { size: 'Short (Small)', price: 18.00 },
+            { size: 'Tall (Large)', price: 23.00 }
+        ];
     } else if (type === 'milo') {
-        options.innerHTML = `
-            <button class="size-btn" onclick="addToOrder('Milo (Short)', 23.00); event.stopPropagation();">
-                <span>Short (Small)</span>
-                <span>P 23.00</span>
-            </button>
-            <button class="size-btn" onclick="addToOrder('Milo (Tall)', 27.00); event.stopPropagation();">
-                <span>Tall (Large)</span>
-                <span>P 27.00</span>
-            </button>
-        `;
+        currentSizes = [
+            { size: 'Short (Small)', price: 23.00 },
+            { size: 'Tall (Large)', price: 27.00 }
+        ];
+    } else if (type === 'milkshake') {
+        currentSizes = [
+            { size: 'Regular', price: 26.00 }
+        ];
+    } else if (type === 'single') {
+        currentSizes = [
+            { size: 'Single Espresso', price: 15.00 }
+        ];
+    } else if (type === 'double') {
+        currentSizes = [
+            { size: 'Double Espresso', price: 18.00 }
+        ];
     } else {
-        options.innerHTML = `
-            <button class="size-btn" onclick="addToOrder('${name}', ${price}); event.stopPropagation();">
-                <span>Regular</span>
-                <span>P ${price.toFixed(2)}</span>
-            </button>
-        `;
+        currentSizes = [
+            { size: 'Regular', price: price }
+        ];
     }
+    
+    // Populate dropdown
+    currentSizes.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.price;
+        option.textContent = `${item.size} - P ${item.price.toFixed(2)}`;
+        dropdown.appendChild(option);
+    });
+    
+    // Reset display
+    priceDisplay.textContent = 'P 0.00';
+    addBtn.disabled = true;
     
     popup.style.display = 'flex';
 }
@@ -102,19 +125,53 @@ function showMilkshakeOptions(flavor) {
         document.getElementById('role-popup').style.display = 'flex';
         return;
     }
-    const popup = document.getElementById('size-popup');
-    const title = document.getElementById('size-popup-title');
-    const options = document.getElementById('size-options');
+    showSizeOptions(flavor, 26.00, 'milkshake');
+}
+
+function updateSizePrice() {
+    const dropdown = document.getElementById('size-dropdown');
+    const priceDisplay = document.getElementById('selected-size-price');
+    const addBtn = document.getElementById('add-size-btn');
+    const selectedPrice = dropdown.value;
     
-    title.textContent = `Select - ${flavor} Milkshake`;
-    options.innerHTML = `
-        <button class="size-btn" onclick="addToOrder('${flavor} Milkshake', 26.00); event.stopPropagation();">
-            <span>Regular</span>
-            <span>P 26.00</span>
-        </button>
-    `;
+    if (selectedPrice) {
+        priceDisplay.textContent = `P ${parseFloat(selectedPrice).toFixed(2)}`;
+        addBtn.disabled = false;
+    } else {
+        priceDisplay.textContent = 'P 0.00';
+        addBtn.disabled = true;
+    }
+}
+
+function addToOrderWithSize() {
+    const dropdown = document.getElementById('size-dropdown');
+    const selectedIndex = dropdown.selectedIndex;
+    const selectedPrice = parseFloat(dropdown.value);
     
-    popup.style.display = 'flex';
+    if (!selectedPrice) {
+        alert('Please select a size');
+        return;
+    }
+    
+    // Get the selected size text
+    const selectedOption = dropdown.options[selectedIndex];
+    const sizeText = selectedOption.text.split(' - ')[0];
+    
+    // Construct full coffee name with size
+    let coffeeName = '';
+    
+    if (currentCoffeeType === 'latte') {
+        coffeeName = `Cafe Latte (${sizeText})`;
+    } else if (currentCoffeeType === 'milo') {
+        coffeeName = `Milo (${sizeText})`;
+    } else if (currentCoffeeType === 'milkshake') {
+        coffeeName = `${currentCoffeeName} Milkshake`;
+    } else {
+        coffeeName = currentCoffeeName;
+    }
+    
+    // Add to order
+    addToOrder(coffeeName, selectedPrice);
 }
 
 function closeSizePopup() {
@@ -251,19 +308,6 @@ function checkout() {
     document.getElementById('delivery-popup').style.display = 'flex';
 }
 
-// Delivery and location variables
-let deliveryMethod = null;
-let deliveryLocation = null;
-
-// Checkout function
-function checkout() {
-    if (order.length === 0) {
-        showNotification('Your order is empty!');
-        return;
-    }
-    document.getElementById('delivery-popup').style.display = 'flex';
-}
-
 // Delivery selection
 function selectDelivery(method) {
     deliveryMethod = method;
@@ -389,6 +433,60 @@ function updateNewLocationDetails() {
     
     if (location === 'block-a' || location === 'block-b') {
         document.getElementById('new-block-details').style.display = 'block';
+    }
+}
+
+function updateLocationSummary() {
+    const campus = document.getElementById('campus-select').value;
+    const mainLocation = document.getElementById('main-location')?.value;
+    const newLocation = document.getElementById('new-location')?.value;
+    const labNumber = document.getElementById('lab-number')?.value;
+    const academicBlock = document.getElementById('academic-block-letter')?.value;
+    const academicRoom = document.getElementById('academic-room')?.value;
+    const lectureTheatre = document.getElementById('lecture-theatre')?.value;
+    const lectureRoom = document.getElementById('lecture-room')?.value;
+    const officeNumber = document.getElementById('office-number')?.value;
+    const newBlockRoom = document.getElementById('new-block-room')?.value;
+    const otherLocation = document.getElementById('other-location')?.value;
+    
+    let locationString = '';
+    
+    if (otherLocation && otherLocation.trim() !== '') {
+        locationString = otherLocation.trim();
+    } else if (campus === 'main') {
+        if (mainLocation === 'reception') {
+            locationString = 'Main Campus - Reception';
+        } else if (mainLocation === 'cafeteria') {
+            locationString = 'Main Campus - Cafeteria';
+        } else if (mainLocation === 'labs' && labNumber) {
+            locationString = `Main Campus - Lab ${labNumber}`;
+        } else if (mainLocation === 'offices' && officeNumber) {
+            locationString = `Main Campus - Offices (${officeNumber})`;
+        } else if (mainLocation === 'lecture-theatre' && lectureTheatre) {
+            locationString = `Main Campus - ${lectureTheatre}`;
+            if (lectureRoom) locationString += ` (Room ${lectureRoom})`;
+        } else if (mainLocation === 'academic-blocks' && academicBlock) {
+            locationString = `Main Campus - Block ${academicBlock}`;
+            if (academicRoom) locationString += ` (Room ${academicRoom})`;
+        }
+    } else if (campus === 'new') {
+        if (newLocation === 'library') {
+            locationString = 'New Campus - Library';
+        } else if (newLocation === 'block-a' && newBlockRoom) {
+            locationString = `New Campus - Block A (Room ${newBlockRoom})`;
+        } else if (newLocation === 'block-b' && newBlockRoom) {
+            locationString = `New Campus - Block B (Room ${newBlockRoom})`;
+        }
+    }
+    
+    const summary = document.getElementById('location-summary');
+    const summaryText = document.getElementById('selected-location-text');
+    
+    if (locationString && summary && summaryText) {
+        summaryText.textContent = locationString;
+        summary.style.display = 'block';
+    } else if (summary) {
+        summary.style.display = 'none';
     }
 }
 
@@ -518,9 +616,13 @@ function closeLocationPopup() {
     
     // Reset campus select
     document.getElementById('campus-select').value = '';
+    
+    // Hide summary
+    const summary = document.getElementById('location-summary');
+    if (summary) summary.style.display = 'none';
 }
 
-// Complete order function (updated to handle delivery/collect properly)
+// Complete order function
 function completeOrder() {
     const orderItems = [...order];
     const subtotal = parseFloat(document.getElementById('subtotal').textContent);
@@ -585,6 +687,7 @@ function completeOrder() {
         document.getElementById('rating-popup').style.display = 'flex';
     }, 30000);
 }
+
 // Rating functions
 function setRating(rating) {
     currentRating = rating;
@@ -880,6 +983,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (savedRole) {
         userRole = savedRole;
     }
+    
+    // Add location summary update to all relevant fields
+    const locationFields = [
+        'campus-select', 'main-location', 'new-location', 'lab-number',
+        'academic-block-letter', 'academic-room', 'lecture-theatre',
+        'lecture-room', 'office-number', 'new-block-room', 'other-location'
+    ];
+    
+    locationFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', updateLocationSummary);
+            el.addEventListener('keyup', updateLocationSummary);
+        }
+    });
     
     // Add click handlers to coffee items
     document.querySelectorAll('.coffee-item').forEach(item => {
