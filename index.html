@@ -392,7 +392,7 @@
         <h2>Delivery Location</h2>
         <p>Select your campus and specific location:</p>
 
-        <!-- Campus Selection - ALWAYS VISIBLE -->
+        <!-- Campus Selection -->
         <div class="location-category">
             <label><i class="fas fa-university"></i> Select Campus:</label>
             <select id="campus-select" class="location-select" onchange="updateCampusLocation()" required>
@@ -402,51 +402,45 @@
             </select>
         </div>
 
-        <!-- Main Campus Specific Locations - appears when Main Campus selected -->
+        <!-- Main Campus Specific Locations -->
         <div id="main-campus-locations" class="location-category" style="display: none;">
             <label><i class="fas fa-map-marker-alt"></i> Select Main Campus Location:</label>
             <select id="main-location" class="location-select" onchange="updateMainLocationDetails()">
                 <option value="">-- Choose Location --</option>
                 <option value="reception">Reception</option>
-                <option value="labs">Labs 1-12 (No eating/drinking in labs)</option>
+                <option value="labs">Labs</option>
                 <option value="cafeteria">Cafeteria</option>
                 <option value="offices">Offices</option>
                 <option value="lecture-theatre">Lecture Theatre</option>
-                <option value="academic-blocks">Academic Blocks A-K</option>
+                <option value="academic-blocks">Academic Blocks</option>
             </select>
         </div>
 
-        <!-- New Campus Specific Locations - appears when New Campus selected -->
-        <div id="new-campus-locations" class="location-category" style="display: none;">
-            <label><i class="fas fa-map-marker-alt"></i> Select New Campus Location:</label>
-            <select id="new-location" class="location-select" onchange="updateNewLocationDetails()">
-                <option value="">-- Choose Location --</option>
-                <option value="library">Library</option>
-                <option value="block-a">Block A</option>
-                <option value="block-b">Block B</option>
+        <!-- Lab Numbers Dropdown -->
+        <div id="lab-numbers" class="location-details" style="display: none;">
+            <label><i class="fas fa-flask"></i> Select Lab Number:</label>
+            <select id="lab-number" class="location-select">
+                <option value="">-- Choose Lab --</option>
+                <option value="1">Lab 1</option>
+                <option value="2">Lab 2</option>
+                <option value="3">Lab 3</option>
+                <option value="4">Lab 4</option>
+                <option value="5">Lab 5</option>
+                <option value="6">Lab 6</option>
+                <option value="7">Lab 7</option>
+                <option value="8">Lab 8</option>
+                <option value="9">Lab 9</option>
+                <option value="10">Lab 10</option>
+                <option value="11">Lab 11</option>
+                <option value="12">Lab 12</option>
             </select>
+            <p class="small-text warning"><i class="fas fa-exclamation-triangle"></i> No eating or drinking in labs</p>
         </div>
 
-        <!-- Lecture Theatre Details - appears when Lecture Theatre selected -->
-        <div id="lecture-theatre-details" class="location-details" style="display: none;">
-            <label><i class="fas fa-chalkboard"></i> Select Lecture Theatre:</label>
-            <select id="lecture-theatre" class="location-select" onchange="updateLectureTheatreRoom()">
-                <option value="">-- Choose Theatre --</option>
-                <option value="Main Lecture Theatre">Main Lecture Theatre</option>
-                <option value="Upper Lecture Theatre">Upper Lecture Theatre</option>
-                <option value="Lower Lecture Theatre">Lower Lecture Theatre</option>
-            </select>
-            
-            <div id="lecture-room-field" style="margin-top: 10px; display: none;">
-                <label><i class="fas fa-door-open"></i> Enter Room Number:</label>
-                <input type="text" id="lecture-room" placeholder="e.g., LT101, Room 5" class="location-input">
-            </div>
-        </div>
-
-        <!-- Academic Block Details - appears when Academic Blocks selected -->
-        <div id="academic-block-details" class="location-details" style="display: none;">
+        <!-- Academic Blocks Dropdown -->
+        <div id="academic-block-select" class="location-details" style="display: none;">
             <label><i class="fas fa-building"></i> Select Block:</label>
-            <select id="academic-block" class="location-select" onchange="updateAcademicBlockRoom()">
+            <select id="academic-block-letter" class="location-select" onchange="updateAcademicBlockRoom()">
                 <option value="">-- Choose Block --</option>
                 <option value="A">Block A</option>
                 <option value="B">Block B</option>
@@ -467,27 +461,49 @@
             </div>
         </div>
 
-        <!-- Office Details - appears when Offices selected -->
+        <!-- Lecture Theatre Details -->
+        <div id="lecture-theatre-details" class="location-details" style="display: none;">
+            <label><i class="fas fa-chalkboard"></i> Select Lecture Theatre:</label>
+            <select id="lecture-theatre" class="location-select" onchange="updateLectureTheatreRoom()">
+                <option value="">-- Choose Theatre --</option>
+                <option value="Main Lecture Theatre">Main Lecture Theatre</option>
+                <option value="Upper Lecture Theatre">Upper Lecture Theatre</option>
+                <option value="Lower Lecture Theatre">Lower Lecture Theatre</option>
+            </select>
+            
+            <div id="lecture-room-field" style="margin-top: 10px; display: none;">
+                <label><i class="fas fa-door-open"></i> Enter Room Number:</label>
+                <input type="text" id="lecture-room" placeholder="e.g., LT101, Room 5" class="location-input">
+            </div>
+        </div>
+
+        <!-- Office Details -->
         <div id="office-details" class="location-details" style="display: none;">
             <label><i class="fas fa-briefcase"></i> Enter Office Number:</label>
             <input type="text" id="office-number" placeholder="e.g., Office 2B, Room 101" class="location-input">
         </div>
 
-        <!-- New Campus Block Details - appears when New Campus Block selected -->
+        <!-- New Campus Locations -->
+        <div id="new-campus-locations" class="location-category" style="display: none;">
+            <label><i class="fas fa-map-marker-alt"></i> Select New Campus Location:</label>
+            <select id="new-location" class="location-select" onchange="updateNewLocationDetails()">
+                <option value="">-- Choose Location --</option>
+                <option value="library">Library</option>
+                <option value="block-a">Block A</option>
+                <option value="block-b">Block B</option>
+            </select>
+        </div>
+
+        <!-- New Campus Block Details -->
         <div id="new-block-details" class="location-details" style="display: none;">
             <label><i class="fas fa-door-open"></i> Enter Room Number:</label>
             <input type="text" id="new-block-room" placeholder="e.g., 101, 205" class="location-input">
         </div>
 
-        <!-- Other Location (Manual Entry) -->
+        <!-- Other Location -->
         <div class="location-category">
             <label><i class="fas fa-pen"></i> Or specify other location:</label>
-            <input type="text" id="other-location" placeholder="Enter specific location (e.g., Sports Complex, Gym)" class="location-input">
-        </div>
-
-        <!-- Selected Location Summary -->
-        <div id="location-summary" class="location-summary" style="display: none;">
-            <p><i class="fas fa-check-circle"></i> Selected: <span id="selected-location-text"></span></p>
+            <input type="text" id="other-location" placeholder="Enter specific location" class="location-input">
         </div>
 
         <button onclick="confirmDelivery()" class="confirm-btn">
