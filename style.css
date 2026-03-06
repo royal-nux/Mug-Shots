@@ -595,46 +595,117 @@ main {
     border-color: #b08b5c;
 }
 
-/* Location Styles */
+/* Location Popup Styles */
 .location-content {
-    text-align: left;
+    max-width: 550px;
 }
 
 .location-category {
-    margin: 1rem 0;
+    margin: 1.2rem 0;
+    text-align: left;
 }
 
 .location-category label {
     display: block;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.5rem;
     color: #3e2c1a;
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+}
+
+.location-category label i {
+    color: #b08b5c;
+    margin-right: 0.5rem;
 }
 
 .location-select {
     width: 100%;
-    padding: 0.8rem;
-    border: 2px solid #d4b48c;
-    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e6d5b8;
+    border-radius: 10px;
     font-size: 0.95rem;
     background: white;
     cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.location-select:hover {
+    border-color: #b08b5c;
 }
 
 .location-select:focus {
     outline: none;
     border-color: #b08b5c;
+    box-shadow: 0 0 0 3px rgba(176, 139, 92, 0.1);
 }
 
-#room-number {
+.location-input {
     width: 100%;
-    padding: 0.8rem;
-    border: 2px solid #d4b48c;
-    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e6d5b8;
+    border-radius: 10px;
     font-size: 0.95rem;
+    background: white;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
 }
 
+.location-input:focus {
+    outline: none;
+    border-color: #b08b5c;
+    box-shadow: 0 0 0 3px rgba(176, 139, 92, 0.1);
+}
+
+.location-details {
+    margin: 1rem 0 1rem 1.5rem;
+    padding-left: 1rem;
+    border-left: 3px solid #e6d5b8;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.location-summary {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #e8f4fd;
+    border-radius: 10px;
+    border-left: 4px solid #b08b5c;
+}
+
+.location-summary p {
+    margin: 0;
+    color: #0d47a1;
+    font-weight: 500;
+}
+
+.location-summary i {
+    color: #b08b5c;
+    margin-right: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 480px) {
+    .location-details {
+        margin: 0.8rem 0 0.8rem 0.8rem;
+        padding-left: 0.8rem;
+    }
+    
+    .location-select, .location-input {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+}
 .confirm-btn, .submit-rating-btn {
     width: 100%;
     padding: 1rem;
