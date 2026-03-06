@@ -5,135 +5,422 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mug Shots - BAC Campus Coffee</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <div class="coffee-bg"></div>
     <header>
-        <h1>☕ Mug Shots</h1>
-        <p class="slogan">"A mug worth shooting for"</p>
-        <p class="subtitle">Fresh coffee delivered to BAC campus!</p>
+        <div class="header-content">
+            <i class="fas fa-mug-hot header-icon"></i>
+            <h1>Mug Shots</h1>
+            <p class="slogan">"a mug worth shooting for"</p>
+            <p class="subtitle">BAC Campus • Fresh Coffee Daily</p>
+        </div>
     </header>
 
     <main>
         <section class="menu">
-            <h2>Our Coffee Menu</h2>
-            <div class="menu-items">
-                <div class="coffee-item" data-name="Espresso" data-price="3.50">
-                    <h3>Espresso</h3>
-                    <p>Rich and bold - $3.50</p>
-                    <button onclick="addToOrder('Espresso', 3.50)">Add to Order</button>
+            <h2><i class="fas fa-coffee"></i> Our Coffee Menu</h2>
+            
+            <!-- Hot Espresso Drinks -->
+            <div class="menu-category">
+                <div class="category-header" onclick="toggleCategory('hot-espresso')">
+                    <h3><i class="fas fa-fire"></i> Hot Espresso Drinks</h3>
+                    <i class="fas fa-chevron-down category-toggle"></i>
                 </div>
-                <div class="coffee-item" data-name="Cappuccino" data-price="4.50">
-                    <h3>Cappuccino</h3>
-                    <p>Smooth and creamy - $4.50</p>
-                    <button onclick="addToOrder('Cappuccino', 4.50)">Add to Order</button>
+                <div id="hot-espresso" class="category-items active">
+                    <!-- Espresso Section -->
+                    <div class="subcategory">
+                        <h4>Espresso</h4>
+                        <div class="menu-items">
+                            <div class="coffee-item" data-name="Single Espresso" data-price="15.00">
+                                <div class="coffee-icon"><i class="fas fa-mug-hot"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Single Espresso</h5>
+                                    <p>Strong & pure</p>
+                                    <span class="price">P 15.00</span>
+                                </div>
+                                <button onclick="addToOrder('Single Espresso', 15.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+                            
+                            <div class="coffee-item" data-name="Double Espresso" data-price="18.00">
+                                <div class="coffee-icon"><i class="fas fa-mug-hot"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Double Espresso</h5>
+                                    <p>Double the kick</p>
+                                    <span class="price">P 18.00</span>
+                                </div>
+                                <button onclick="addToOrder('Double Espresso', 18.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other Hot Drinks -->
+                    <div class="subcategory">
+                        <h4>Signature Hot Drinks</h4>
+                        <div class="menu-items">
+                            <div class="coffee-item" data-name="Cappuccino" data-price="18.50">
+                                <div class="coffee-icon"><i class="fas fa-mug-hot"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Cappuccino</h5>
+                                    <p>Espresso with foamy milk</p>
+                                    <span class="price">P 18.50</span>
+                                </div>
+                                <button onclick="addToOrder('Cappuccino', 18.50)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Cafe Latte (Short)" data-price="18.00">
+                                <div class="coffee-icon"><i class="fas fa-mug-hot"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Cafe Latte - Short</h5>
+                                    <p>Smooth & creamy (small)</p>
+                                    <span class="price">P 18.00</span>
+                                </div>
+                                <button onclick="addToOrder('Cafe Latte (Short)', 18.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Cafe Latte (Tall)" data-price="23.00">
+                                <div class="coffee-icon"><i class="fas fa-mug-hot"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Cafe Latte - Tall</h5>
+                                    <p>Smooth & creamy (large)</p>
+                                    <span class="price">P 23.00</span>
+                                </div>
+                                <button onclick="addToOrder('Cafe Latte (Tall)', 23.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Cafe Mocha" data-price="22.00">
+                                <div class="coffee-icon"><i class="fas fa-mug-hot"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Cafe Mocha</h5>
+                                    <p>Chocolate & coffee delight</p>
+                                    <span class="price">P 22.00</span>
+                                </div>
+                                <button onclick="addToOrder('Cafe Mocha', 22.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Chai Latte" data-price="20.00">
+                                <div class="coffee-icon"><i class="fas fa-mug-hot"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Chai Latte</h5>
+                                    <p>Spiced tea with milk</p>
+                                    <span class="price">P 20.00</span>
+                                </div>
+                                <button onclick="addToOrder('Chai Latte', 20.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Hot Chocolate" data-price="22.00">
+                                <div class="coffee-icon"><i class="fas fa-mug-hot"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Hot Chocolate</h5>
+                                    <p>Rich & creamy</p>
+                                    <span class="price">P 22.00</span>
+                                </div>
+                                <button onclick="addToOrder('Hot Chocolate', 22.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Milo (Short)" data-price="23.00">
+                                <div class="coffee-icon"><i class="fas fa-mug-hot"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Milo - Short</h5>
+                                    <p>Chocolate malt drink (small)</p>
+                                    <span class="price">P 23.00</span>
+                                </div>
+                                <button onclick="addToOrder('Milo (Short)', 23.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Milo (Tall)" data-price="27.00">
+                                <div class="coffee-icon"><i class="fas fa-mug-hot"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Milo - Tall</h5>
+                                    <p>Chocolate malt drink (large)</p>
+                                    <span class="price">P 27.00</span>
+                                </div>
+                                <button onclick="addToOrder('Milo (Tall)', 27.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="coffee-item" data-name="Latte" data-price="4.50">
-                    <h3>Latte</h3>
-                    <p>Espresso with steamed milk - $4.50</p>
-                    <button onclick="addToOrder('Latte', 4.50)">Add to Order</button>
+            </div>
+
+            <!-- Cold Drinks -->
+            <div class="menu-category">
+                <div class="category-header" onclick="toggleCategory('cold-drinks')">
+                    <h3><i class="fas fa-snowflake"></i> Cold Drinks</h3>
+                    <i class="fas fa-chevron-down category-toggle"></i>
                 </div>
-                <div class="coffee-item" data-name="Americano" data-price="3.50">
-                    <h3>Americano</h3>
-                    <p>Espresso with hot water - $3.50</p>
-                    <button onclick="addToOrder('Americano', 3.50)">Add to Order</button>
-                </div>
-                <div class="coffee-item" data-name="Mocha" data-price="5.00">
-                    <h3>Mocha</h3>
-                    <p>Chocolate and coffee - $5.00</p>
-                    <button onclick="addToOrder('Mocha', 5.00)">Add to Order</button>
-                </div>
-                <div class="coffee-item" data-name="Caramel Macchiato" data-price="5.50">
-                    <h3>Caramel Macchiato</h3>
-                    <p>Vanilla and caramel - $5.50</p>
-                    <button onclick="addToOrder('Caramel Macchiato', 5.50)">Add to Order</button>
+                <div id="cold-drinks" class="category-items active">
+                    <div class="subcategory">
+                        <h4>Chilled Coffee</h4>
+                        <div class="menu-items">
+                            <div class="coffee-item" data-name="Coffee Freezo" data-price="26.00">
+                                <div class="coffee-icon"><i class="fas fa-glass-whiskey"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Coffee Freezo</h5>
+                                    <p>Blended iced coffee</p>
+                                    <span class="price">P 26.00</span>
+                                </div>
+                                <button onclick="addToOrder('Coffee Freezo', 26.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subcategory">
+                        <h4>Milkshakes - P26 each</h4>
+                        <div class="menu-items">
+                            <div class="coffee-item" data-name="Vanilla Milkshake" data-price="26.00">
+                                <div class="coffee-icon"><i class="fas fa-ice-cream"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Vanilla</h5>
+                                    <p>Classic vanilla flavor</p>
+                                    <span class="price">P 26.00</span>
+                                </div>
+                                <button onclick="addToOrder('Vanilla Milkshake', 26.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Salted Caramel Milkshake" data-price="26.00">
+                                <div class="coffee-icon"><i class="fas fa-candy-cane"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Salted Caramel</h5>
+                                    <p>Sweet & salty perfection</p>
+                                    <span class="price">P 26.00</span>
+                                </div>
+                                <button onclick="addToOrder('Salted Caramel Milkshake', 26.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Caramel Milkshake" data-price="26.00">
+                                <div class="coffee-icon"><i class="fas fa-candy-cane"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Caramel</h5>
+                                    <p>Smooth caramel</p>
+                                    <span class="price">P 26.00</span>
+                                </div>
+                                <button onclick="addToOrder('Caramel Milkshake', 26.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Chocolate Milkshake" data-price="26.00">
+                                <div class="coffee-icon"><i class="fas fa-candy-cane"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Chocolate</h5>
+                                    <p>Rich chocolate flavor</p>
+                                    <span class="price">P 26.00</span>
+                                </div>
+                                <button onclick="addToOrder('Chocolate Milkshake', 26.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Strawberry Milkshake" data-price="26.00">
+                                <div class="coffee-icon"><i class="fas fa-strawberry"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Strawberry</h5>
+                                    <p>Sweet strawberry</p>
+                                    <span class="price">P 26.00</span>
+                                </div>
+                                <button onclick="addToOrder('Strawberry Milkshake', 26.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Lime Milkshake" data-price="26.00">
+                                <div class="coffee-icon"><i class="fas fa-lemon"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Lime</h5>
+                                    <p>Zesty lime refreshment</p>
+                                    <span class="price">P 26.00</span>
+                                </div>
+                                <button onclick="addToOrder('Lime Milkshake', 26.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Bubblegum Milkshake" data-price="26.00">
+                                <div class="coffee-icon"><i class="fas fa-candy"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Bubblegum</h5>
+                                    <p>Fun bubblegum flavor</p>
+                                    <span class="price">P 26.00</span>
+                                </div>
+                                <button onclick="addToOrder('Bubblegum Milkshake', 26.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+
+                            <div class="coffee-item" data-name="Banana Milkshake" data-price="26.00">
+                                <div class="coffee-icon"><i class="fas fa-apple-alt"></i></div>
+                                <div class="coffee-details">
+                                    <h5>Banana</h5>
+                                    <p>Creamy banana</p>
+                                    <span class="price">P 26.00</span>
+                                </div>
+                                <button onclick="addToOrder('Banana Milkshake', 26.00)" class="add-btn"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section class="current-order">
-            <h2>Your Order</h2>
+            <h2><i class="fas fa-shopping-bag"></i> Your Order</h2>
             <div id="order-items"></div>
             <div class="order-summary">
-                <p>Subtotal: $<span id="subtotal">0.00</span></p>
-                <p>Discount: <span id="discount-amount">$0.00</span></p>
-                <p><strong>Total: $<span id="total">0.00</span></strong></p>
+                <p>Subtotal: P <span id="subtotal">0.00</span></p>
+                <p>Discount: P <span id="discount-amount">0.00</span></p>
+                <p><strong>Total: P <span id="total">0.00</span></strong></p>
             </div>
-            <button id="checkout-btn" onclick="checkout()" disabled>Proceed to Checkout</button>
+            <button id="checkout-btn" onclick="checkout()" disabled>
+                <i class="fas fa-credit-card"></i> Proceed to Checkout
+            </button>
         </section>
     </main>
 
     <!-- Role Selection Popup -->
     <div id="role-popup" class="popup">
         <div class="popup-content">
-            <h2>Welcome to Mug Shots! ☕</h2>
-            <p>"A mug worth shooting for"</p>
+            <i class="fas fa-mug-hot popup-icon"></i>
+            <h2>Welcome to Mug Shots!</h2>
+            <p class="slogan-small">"a mug worth shooting for"</p>
             <p>Please identify yourself:</p>
-            <button onclick="selectRole('student')">🎓 Student (5% discount)</button>
-            <button onclick="selectRole('lecturer')">👨‍🏫 Lecturer</button>
-            <button onclick="selectRole('staff')">👔 BAC Staff</button>
+            <button onclick="selectRole('student')" class="role-btn student">
+                <i class="fas fa-graduation-cap"></i> Student (5% discount)
+            </button>
+            <button onclick="selectRole('lecturer')" class="role-btn lecturer">
+                <i class="fas fa-chalkboard-teacher"></i> Lecturer
+            </button>
+            <button onclick="selectRole('staff')" class="role-btn staff">
+                <i class="fas fa-id-card"></i> BAC Staff
+            </button>
         </div>
     </div>
 
     <!-- Delivery Popup -->
     <div id="delivery-popup" class="popup">
         <div class="popup-content">
+            <i class="fas fa-truck popup-icon"></i>
             <h2>Delivery Options</h2>
             <p>How would you like to receive your order?</p>
-            <button onclick="selectDelivery('collect')">🏢 I'll collect</button>
-            <button onclick="showDeliveryLocation()">🚚 Deliver to me</button>
+            <button onclick="selectDelivery('collect')" class="delivery-btn">
+                <i class="fas fa-store"></i> I'll collect
+            </button>
+            <button onclick="showDeliveryLocation()" class="delivery-btn">
+                <i class="fas fa-map-marker-alt"></i> Deliver to me
+            </button>
         </div>
     </div>
 
-    <!-- Location Popup -->
+    <!-- Location Popup with Detailed Campus Locations -->
     <div id="location-popup" class="popup">
-        <div class="popup-content">
+        <div class="popup-content location-content">
+            <i class="fas fa-map-pin popup-icon"></i>
             <h2>Delivery Location</h2>
-            <p>Where on campus should we deliver your coffee?</p>
-            <select id="campus-location">
-                <option value="">Select a location</option>
-                <option value="Library">📚 Library</option>
-                <option value="Main Building">🏛️ Main Building</option>
-                <option value="Science Block">🔬 Science Block</option>
-                <option value="Student Union">🎭 Student Union</option>
-                <option value="Cafeteria">🍽️ Cafeteria</option>
-                <option value="Sports Complex">⚽ Sports Complex</option>
-            </select>
+            <p>Select your location on campus:</p>
+            
+            <div class="location-category">
+                <h4><i class="fas fa-building"></i> Main Campus</h4>
+                <select id="main-campus" class="location-select" onchange="updateLocationDetails()">
+                    <option value="">Select location</option>
+                    <option value="Reception">Reception</option>
+                    <option value="Labs 1-12">Labs 1-12 (No eating/drinking in labs)</option>
+                    <option value="Cafeteria">Cafeteria</option>
+                    <option value="Offices">Offices</option>
+                </select>
+            </div>
+
+            <div class="location-category">
+                <h4><i class="fas fa-chalkboard"></i> Lecture Theater Blocks</h4>
+                <select id="lecture-blocks" class="location-select" onchange="updateLocationDetails()">
+                    <option value="">Select block</option>
+                    <option value="Block A">Block A</option>
+                    <option value="Block B">Block B</option>
+                    <option value="Block C">Block C</option>
+                    <option value="Block D">Block D</option>
+                    <option value="Block E">Block E</option>
+                    <option value="Block F">Block F</option>
+                    <option value="Block G">Block G</option>
+                    <option value="Block H">Block H</option>
+                    <option value="Block I">Block I</option>
+                    <option value="Block J">Block J</option>
+                    <option value="Block K">Block K</option>
+                </select>
+            </div>
+
+            <div class="location-category">
+                <h4><i class="fas fa-book"></i> New Campus</h4>
+                <select id="new-campus" class="location-select" onchange="updateLocationDetails()">
+                    <option value="">Select location</option>
+                    <option value="New Campus Library">Library</option>
+                    <option value="New Campus Block A">Block A</option>
+                    <option value="New Campus Block B">Block B</option>
+                </select>
+            </div>
+
+            <div id="room-details" class="room-details" style="display: none;">
+                <p class="small-text">Enter room/office number:</p>
+                <input type="text" id="room-number" placeholder="e.g., 101, Office 2B">
+            </div>
+
             <p class="small-text">Or specify other location:</p>
-            <input type="text" id="other-location" placeholder="Enter building/room number">
-            <button onclick="confirmDelivery()">Confirm Delivery Location</button>
+            <input type="text" id="other-location" placeholder="Enter specific location">
+
+            <button onclick="confirmDelivery()" class="confirm-btn">
+                <i class="fas fa-check"></i> Confirm Delivery Location
+            </button>
+        </div>
+    </div>
+
+    <!-- Order Confirmation with Call Button -->
+    <div id="confirmation-popup" class="popup">
+        <div class="popup-content">
+            <i class="fas fa-check-circle popup-icon success"></i>
+            <h2>Order Confirmed!</h2>
+            <div id="confirmation-message" class="confirmation-message"></div>
+            
+            <div class="call-section">
+                <p>Need to confirm or modify your order?</p>
+                <a href="tel:+26771234567" class="call-btn">
+                    <i class="fas fa-phone-alt"></i> Call to Confirm
+                </a>
+                <p class="small-text">(Call within 5 minutes to make changes)</p>
+            </div>
+
+            <div class="tracking-info">
+                <p><i class="fas fa-clock"></i> Estimated waiting time: 10-15 minutes</p>
+            </div>
+
+            <button onclick="closeConfirmation()" class="confirm-btn">
+                <i class="fas fa-thumbs-up"></i> Great!
+            </button>
         </div>
     </div>
 
     <!-- Rating Popup -->
     <div id="rating-popup" class="popup">
         <div class="popup-content">
-            <h2>How was your coffee? ⭐</h2>
+            <i class="fas fa-star popup-icon"></i>
+            <h2>How was your coffee?</h2>
             <p>Please rate your experience with Mug Shots:</p>
             <div class="rating-stars">
-                <span onclick="setRating(1)">★</span>
-                <span onclick="setRating(2)">★</span>
-                <span onclick="setRating(3)">★</span>
-                <span onclick="setRating(4)">★</span>
-                <span onclick="setRating(5)">★</span>
+                <span onclick="setRating(1)"><i class="fas fa-star"></i></span>
+                <span onclick="setRating(2)"><i class="fas fa-star"></i></span>
+                <span onclick="setRating(3)"><i class="fas fa-star"></i></span>
+                <span onclick="setRating(4)"><i class="fas fa-star"></i></span>
+                <span onclick="setRating(5)"><i class="fas fa-star"></i></span>
             </div>
             <p id="selected-rating"></p>
             <textarea id="review-text" placeholder="Tell us about your experience... (optional)"></textarea>
-            <button onclick="submitRating()">Submit Rating</button>
-            <button onclick="closeRatingPopup()">Maybe Later</button>
-        </div>
-    </div>
-
-    <!-- Order Confirmation -->
-    <div id="confirmation-popup" class="popup">
-        <div class="popup-content">
-            <h2>Order Confirmed! ✅</h2>
-            <p id="confirmation-message"></p>
-            <button onclick="closeConfirmation()">Great!</button>
+            <button onclick="submitRating()" class="submit-rating-btn">
+                <i class="fas fa-paper-plane"></i> Submit Rating
+            </button>
+            <button onclick="closeRatingPopup()" class="later-btn">
+                <i class="fas fa-clock"></i> Maybe Later
+            </button>
         </div>
     </div>
 
     <footer>
-        <p>© 2024 Mug Shots - BAC Campus | "A mug worth shooting for"</p>
+        <div class="footer-content">
+            <p><i class="fas fa-copyright"></i> 2024 Mug Shots - BAC Campus</p>
+            <p class="footer-slogan">"a mug worth shooting for"</p>
+            <p class="contact-info">
+                <i class="fas fa-phone"></i> Call us: <a href="tel:+26775119155">+267 73 716 319</a>
+            </p>
+        </div>
     </footer>
 
     <script src="script.js"></script>
