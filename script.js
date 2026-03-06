@@ -16,7 +16,9 @@ let currentAdmin = null;
 
 // Check if first time visitor
 if (!localStorage.getItem('hasVisited')) {
-    document.getElementById('role-popup').style.display = 'flex';
+    window.onload = function() {
+        document.getElementById('role-popup').style.display = 'flex';
+    };
 }
 
 // Category toggle function
@@ -47,36 +49,29 @@ function showSizeOptions(name, price, type) {
     
     if (type === 'latte') {
         options.innerHTML = `
-            <button class="size-btn" onclick="addToOrder('Cafe Latte (Short)', 18.00)">
+            <button class="size-btn" onclick="addToOrder('Cafe Latte (Short)', 18.00); event.stopPropagation();">
                 <span>Short (Small)</span>
                 <span>P 18.00</span>
             </button>
-            <button class="size-btn" onclick="addToOrder('Cafe Latte (Tall)', 23.00)">
+            <button class="size-btn" onclick="addToOrder('Cafe Latte (Tall)', 23.00); event.stopPropagation();">
                 <span>Tall (Large)</span>
                 <span>P 23.00</span>
             </button>
         `;
     } else if (type === 'milo') {
         options.innerHTML = `
-            <button class="size-btn" onclick="addToOrder('Milo (Short)', 23.00)">
+            <button class="size-btn" onclick="addToOrder('Milo (Short)', 23.00); event.stopPropagation();">
                 <span>Short (Small)</span>
                 <span>P 23.00</span>
             </button>
-            <button class="size-btn" onclick="addToOrder('Milo (Tall)', 27.00)">
+            <button class="size-btn" onclick="addToOrder('Milo (Tall)', 27.00); event.stopPropagation();">
                 <span>Tall (Large)</span>
                 <span>P 27.00</span>
             </button>
         `;
-    } else if (type === 'milkshake') {
-        options.innerHTML = `
-            <button class="size-btn" onclick="addToOrder('${name} Milkshake', 26.00)">
-                <span>Regular</span>
-                <span>P 26.00</span>
-            </button>
-        `;
     } else {
         options.innerHTML = `
-            <button class="size-btn" onclick="addToOrder('${name}', ${price})">
+            <button class="size-btn" onclick="addToOrder('${name}', ${price}); event.stopPropagation();">
                 <span>Regular</span>
                 <span>P ${price.toFixed(2)}</span>
             </button>
@@ -87,15 +82,39 @@ function showSizeOptions(name, price, type) {
 }
 
 function showLatteOptions() {
+    if (!userRole) {
+        document.getElementById('role-popup').style.display = 'flex';
+        return;
+    }
     showSizeOptions('Cafe Latte', 0, 'latte');
 }
 
 function showMiloOptions() {
+    if (!userRole) {
+        document.getElementById('role-popup').style.display = 'flex';
+        return;
+    }
     showSizeOptions('Milo', 0, 'milo');
 }
 
 function showMilkshakeOptions(flavor) {
-    showSizeOptions(flavor, 26.00, 'milkshake');
+    if (!userRole) {
+        document.getElementById('role-popup').style.display = 'flex';
+        return;
+    }
+    const popup = document.getElementById('size-popup');
+    const title = document.getElementById('size-popup-title');
+    const options = document.getElementById('size-options');
+    
+    title.textContent = `Select - ${flavor} Milkshake`;
+    options.innerHTML = `
+        <button class="size-btn" onclick="addToOrder('${flavor} Milkshake', 26.00); event.stopPropagation();">
+            <span>Regular</span>
+            <span>P 26.00</span>
+        </button>
+    `;
+    
+    popup.style.display = 'flex';
 }
 
 function closeSizePopup() {
@@ -133,6 +152,31 @@ function addToOrder(name, price) {
     closeSizePopup();
     updateOrderDisplay();
     document.getElementById('checkout-btn').disabled = false;
+    
+    // Show confirmation message
+    showNotification(`${name} added to order!`);
+}
+
+// Show notification
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 2000);
 }
 
 // Update quantity
@@ -158,9 +202,19 @@ function removeItem(name) {
 // Update order display
 function updateOrderDisplay() {
     const orderItemsDiv = document.getElementById('order-items');
+    if (!orderItemsDiv) return;
+    
     orderItemsDiv.innerHTML = '';
     
     let subtotal = 0;
+    
+    if (order.length === 0) {
+        orderItemsDiv.innerHTML = '<p class="empty-order">Your order is empty</p>';
+        document.getElementById('subtotal').textContent = '0.00';
+        document.getElementById('discount-amount').textContent = '0.00';
+        document.getElementById('total').textContent = '0.00';
+        return;
+    }
     
     order.forEach(item => {
         subtotal += item.price * item.quantity;
@@ -168,14 +222,14 @@ function updateOrderDisplay() {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'order-item';
         itemDiv.innerHTML = `
-            <span>${item.name}</span>
+            <span class="item-name">${item.name}</span>
             <div class="order-item-controls">
-                <button onclick="updateQuantity('${item.name}', -1)">-</button>
+                <button onclick="updateQuantity('${item.name.replace(/'/g, "\\'")}', -1)">-</button>
                 <span>${item.quantity}</span>
-                <button onclick="updateQuantity('${item.name}', 1)">+</button>
-                <button class="remove-btn" onclick="removeItem('${item.name}')">×</button>
+                <button onclick="updateQuantity('${item.name.replace(/'/g, "\\'")}', 1)">+</button>
+                <button class="remove-btn" onclick="removeItem('${item.name.replace(/'/g, "\\'")}')">×</button>
             </div>
-            <span>P ${(item.price * item.quantity).toFixed(2)}</span>
+            <span class="item-price">P ${(item.price * item.quantity).toFixed(2)}</span>
         `;
         orderItemsDiv.appendChild(itemDiv);
     });
@@ -190,7 +244,10 @@ function updateOrderDisplay() {
 
 // Checkout
 function checkout() {
-    if (order.length === 0) return;
+    if (order.length === 0) {
+        showNotification('Your order is empty!');
+        return;
+    }
     document.getElementById('delivery-popup').style.display = 'flex';
 }
 
@@ -234,6 +291,7 @@ function updateMainLocationDetails() {
     
     if (location === 'lecture-theaters') {
         document.getElementById('lecture-block-options').style.display = 'block';
+        document.getElementById('room-number-container').style.display = 'block';
     } else if (location === 'offices') {
         document.getElementById('room-number-container').style.display = 'block';
     }
@@ -262,7 +320,7 @@ function confirmDelivery() {
         location = otherLocation;
     } else if (campus === 'main') {
         if (mainLocation === 'reception') location = 'Main Campus - Reception';
-        else if (mainLocation === 'labs') location = 'Main Campus - Labs 1-12';
+        else if (mainLocation === 'labs') location = 'Main Campus - Labs 1-12 (No eating/drinking)';
         else if (mainLocation === 'cafeteria') location = 'Main Campus - Cafeteria';
         else if (mainLocation === 'offices') {
             location = `Main Campus - Offices ${roomNumber ? '(Office ' + roomNumber + ')' : ''}`;
@@ -278,7 +336,7 @@ function confirmDelivery() {
         }
     }
     
-    if (!location) {
+    if (!location || location === '') {
         alert('Please select a delivery location');
         return;
     }
@@ -340,7 +398,7 @@ function completeOrder() {
         <strong>Order #${orderData.id}</strong><br>
         Thank you for ordering from Mug Shots!<br>
         ${deliveryText}<br>
-        Total: P ${total.toFixed(2)}
+        <strong>Total: P ${total.toFixed(2)}</strong>
     `;
     
     document.getElementById('confirmation-popup').style.display = 'flex';
@@ -372,6 +430,11 @@ function setRating(rating) {
 }
 
 function submitRating() {
+    if (currentRating === 0) {
+        alert('Please select a rating');
+        return;
+    }
+    
     const review = document.getElementById('review-text').value;
     
     const ratings = JSON.parse(localStorage.getItem('ratings') || '[]');
@@ -443,6 +506,8 @@ function loadPendingOrders() {
     const pendingOrders = orders.filter(o => o.status === 'pending');
     
     const list = document.getElementById('pending-orders-list');
+    if (!list) return;
+    
     if (pendingOrders.length === 0) {
         list.innerHTML = '<p class="no-items">No pending orders</p>';
         return;
@@ -454,7 +519,7 @@ function loadPendingOrders() {
                 <strong>Order #${order.id}</strong><br>
                 <small>${new Date(order.timestamp).toLocaleString()}</small><br>
                 <small>Role: ${order.role}</small><br>
-                <small>Total: P ${order.total}</small>
+                <small>Total: P ${order.total.toFixed(2)}</small>
             </div>
             <button onclick="markOrderCompleted('${order.id}')" class="status-pending">
                 Mark Complete
@@ -468,6 +533,8 @@ function loadCompletedOrders() {
     const completedOrders = orders.filter(o => o.status === 'completed');
     
     const list = document.getElementById('completed-orders-list');
+    if (!list) return;
+    
     if (completedOrders.length === 0) {
         list.innerHTML = '<p class="no-items">No completed orders</p>';
         return;
@@ -479,7 +546,7 @@ function loadCompletedOrders() {
                 <strong>Order #${order.id}</strong><br>
                 <small>${new Date(order.timestamp).toLocaleString()}</small><br>
                 <small>Role: ${order.role}</small><br>
-                <small>Total: P ${order.total}</small>
+                <small>Total: P ${order.total.toFixed(2)}</small>
             </div>
             <span class="item-status status-completed">Completed</span>
         </div>
@@ -494,6 +561,7 @@ function markOrderCompleted(orderId) {
         orders[orderIndex].status = 'completed';
         localStorage.setItem('orders', JSON.stringify(orders));
         loadAdminDashboard();
+        showNotification('Order marked as completed');
     }
 }
 
@@ -501,6 +569,8 @@ function loadAllRatings() {
     const ratings = JSON.parse(localStorage.getItem('ratings') || '[]');
     
     const list = document.getElementById('all-ratings-list');
+    if (!list) return;
+    
     if (ratings.length === 0) {
         list.innerHTML = '<p class="no-items">No ratings yet</p>';
         return;
@@ -562,6 +632,8 @@ function loadPopularItems() {
         .slice(0, 5);
     
     const list = document.getElementById('popular-items-list');
+    if (!list) return;
+    
     if (sortedItems.length === 0) {
         list.innerHTML = '<p class="no-items">No sales data yet</p>';
         return;
@@ -584,10 +656,69 @@ function loadLocationStats() {
     });
     
     const list = document.getElementById('location-stats');
+    if (!list) return;
+    
     if (Object.keys(locationCount).length === 0) {
         list.innerHTML = '<p class="no-items">No delivery data yet</p>';
         return;
     }
     
     list.innerHTML = Object.entries(locationCount)
-        .sort((a, b) => b
+        .sort((a, b) => b[1] - a[1])
+        .map(([location, count]) => `
+            <div class="admin-list-item">
+                <span><strong>${location}</strong></span>
+                <span class="item-status">${count} deliveries</span>
+            </div>
+        `).join('');
+}
+
+function switchAdminTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.admin-tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(`admin-${tabName}-tab`).classList.add('active');
+}
+
+function logoutAdmin() {
+    currentAdmin = null;
+    document.getElementById('admin-dashboard').style.display = 'none';
+    showNotification('Logged out successfully');
+}
+
+function closeAdminDashboard() {
+    document.getElementById('admin-dashboard').style.display = 'none';
+}
+
+// Close popups when clicking outside
+window.onclick = function(event) {
+    if (event.target.classList.contains('popup')) {
+        event.target.style.display = 'none';
+    }
+}
+
+// Load user role from localStorage on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedRole = localStorage.getItem('userRole');
+    if (savedRole) {
+        userRole = savedRole;
+    }
+    
+    // Add click handlers to coffee items
+    document.querySelectorAll('.coffee-item').forEach(item => {
+        const addBtn = item.querySelector('.add-btn');
+        if (addBtn) {
+            addBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // The onclick on the parent div will handle the size selection
+            });
+        }
+    });
+});
