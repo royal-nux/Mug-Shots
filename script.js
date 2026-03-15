@@ -101,7 +101,7 @@ function adminLogin() {
     const username = document.getElementById('admin-username').value;
     const password = document.getElementById('admin-password').value;
     
-    if (username === 'admin' && password === 'admin123') {
+    if (username === 'Orefilejakes' && password === 'Dijeje@blo') {
         closeAdminLogin();
         loadAdminDashboard();
         document.getElementById('admin-dashboard').style.display = 'flex';
@@ -214,7 +214,7 @@ function loadRatingsTab() {
 
 function loadStatsTab() {
     document.getElementById('total-orders').textContent = orders.length;
-    document.getElementById('total-revenue').textContent = orders.reduce((sum, o) => sum + o.total, 0).toFixed(2);
+    document.getElementById('total-revenue').textContent = 'P ' + orders.reduce((sum, o) => sum + o.total, 0).toFixed(2);
     document.getElementById('total-deliveries').textContent = orders.filter(o => o.deliveryMethod === 'delivery').length;
     document.getElementById('milk-alternative-count').textContent = milkAlerts.length;
 }
@@ -368,6 +368,7 @@ function handleLactoseTolerant(isTolerant) {
         closeLactosePopup();
     } else {
         document.getElementById('milk-alternatives').style.display = 'block';
+        document.getElementById('lactose-cancel').style.display = 'none';
     }
 }
 
