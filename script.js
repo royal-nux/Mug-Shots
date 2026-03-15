@@ -101,7 +101,7 @@ function adminLogin() {
     const username = document.getElementById('admin-username').value;
     const password = document.getElementById('admin-password').value;
     
-    if (username === 'admin mg' && password === 'dijejeablo') {
+    if (username === 'admin' && password === 'dijejeablo') {
         closeAdminLogin();
         loadAdminDashboard();
         document.getElementById('admin-dashboard').style.display = 'flex';
