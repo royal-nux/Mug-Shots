@@ -499,7 +499,7 @@ main {
     color: #2c1810;
 }
 
-.role-btn, .delivery-btn, .lactose-btn {
+.role-btn, .delivery-btn, .lactose-btn, .milk-btn {
     width: 100%;
     padding: 15px;
     margin: 10px 0;
@@ -523,43 +523,47 @@ main {
 }
 
 .lactose-btn.yes {
-    background: #e74c3c;
-    color: #fff;
-}
-
-.lactose-btn.no {
     background: #27ae60;
     color: #fff;
 }
 
-.lactose-info {
-    background: rgba(196, 154, 108, 0.1);
-    padding: 20px;
-    border-radius: 10px;
+.lactose-btn.no {
+    background: #e74c3c;
+    color: #fff;
+}
+
+.milk-alternatives {
     margin: 20px 0;
-    text-align: left;
+    padding: 20px;
+    background: rgba(196, 154, 108, 0.1);
+    border-radius: 10px;
 }
 
-.lactose-info ul {
-    list-style: none;
-    margin: 15px 0;
-}
-
-.lactose-info li {
-    padding: 8px 0;
+.milk-alternatives h3 {
     color: #e6d5b8;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 1.2em;
 }
 
-.lactose-info li:before {
-    content: "•";
-    color: #c49a6c;
-    font-size: 1.5em;
+.milk-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
 }
 
-.lactose-note {
+.milk-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid #c49a6c;
+    color: #fff;
+    padding: 12px;
+}
+
+.milk-btn:hover {
+    background: #c49a6c;
+    color: #2c1810;
+}
+
+.milk-note {
     background: rgba(46, 204, 113, 0.1);
     padding: 15px;
     border-radius: 10px;
@@ -1203,6 +1207,10 @@ footer {
     }
 
     .extras-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .milk-options {
         grid-template-columns: 1fr;
     }
 }
