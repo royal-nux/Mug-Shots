@@ -2,7 +2,8 @@ let currentOrder = [];
 let selectedRole = null;
 let userRole = null;
 let currentItem = null;
-let lactoseIntolerant = false;
+let lactoseTolerant = true;
+let selectedMilk = null;
 let selectedExtras = [];
 let deliveryMethod = null;
 let deliveryLocation = null;
@@ -10,7 +11,7 @@ let currentRating = 0;
 
 let orders = JSON.parse(localStorage.getItem('orders')) || [];
 let ratings = JSON.parse(localStorage.getItem('ratings')) || [];
-let lactoseAlerts = JSON.parse(localStorage.getItem('lactoseAlerts')) || [];
+let milkAlerts = JSON.parse(localStorage.getItem('milkAlerts')) || [];
 
 const DISCOUNT_RATES = {
     'student': 0.05,
@@ -138,7 +139,7 @@ function loadAdminDashboard() {
 function loadOrdersTab() {
     const pendingList = document.getElementById('pending-orders-list');
     const completedList = document.getElementById('completed-orders-list');
-    const alertsList = document.getElementById('lactose-alerts-list');
+    const alertsList = document.getElementById('milk-alerts-list');
     
     const pendingOrders = orders.filter(o => !o.completed);
     const completedOrders = orders.filter(o => o.completed);
@@ -168,16 +169,16 @@ function loadOrdersTab() {
             </div>
         `).join('') : '<p style="color:#999; padding:10px;">No completed orders</p>';
     
-    alertsList.innerHTML = lactoseAlerts.length ?
-        lactoseAlerts.map(alert => `
+    alertsList.innerHTML = milkAlerts.length ?
+        milkAlerts.map(alert => `
             <div class="order-item" style="border-left:4px solid #e74c3c;">
                 <div class="order-item-details">
-                    <div class="order-item-name">Order #${alert.orderId} - Lactose Intolerant</div>
-                    <div class="order-item-price">Use dairy-free alternatives</div>
+                    <div class="order-item-name">Order #${alert.orderId} - ${alert.milk} Milk</div>
+                    <div class="order-item-price">Use ${alert.milk} milk alternatives</div>
                     <div style="font-size:0.8em; color:#999;">${new Date(alert.timestamp).toLocaleString()}</div>
                 </div>
             </div>
-        `).join('') : '<p style="color:#999; padding:10px;">No lactose intolerance alerts</p>';
+        `).join('') : '<p style="color:#999; padding:10px;">No milk alternative alerts</p>';
 }
 
 function completeOrder(orderId) {
@@ -215,7 +216,7 @@ function loadStatsTab() {
     document.getElementById('total-orders').textContent = orders.length;
     document.getElementById('total-revenue').textContent = orders.reduce((sum, o) => sum + o.total, 0).toFixed(2);
     document.getElementById('total-deliveries').textContent = orders.filter(o => o.deliveryMethod === 'delivery').length;
-    document.getElementById('lactose-free-count').textContent = lactoseAlerts.length;
+    document.getElementById('milk-alternative-count').textContent = milkAlerts.length;
 }
 
 function showSizePopup(button) {
@@ -223,14 +224,15 @@ function showSizePopup(button) {
     currentItem = {
         name: item.dataset.name,
         basePrice: parseFloat(item.dataset.price),
-        type: item.dataset.type
+        type: item.dataset.type,
+        dairy: item.dataset.dairy === 'true'
     };
     
     const popup = document.getElementById('size-popup');
     const sizeOptions = document.getElementById('size-options');
     
     let sizes = [];
-    if (currentItem.type === 'latte' || currentItem.type === 'milo') {
+    if (currentItem.type === 'latte' || currentItem.type === 'milo' || currentItem.type === 'freezo') {
         sizes = [
             { name: 'Regular', price: currentItem.basePrice },
             { name: 'Large', price: currentItem.basePrice + 4 }
@@ -260,7 +262,7 @@ function addToOrder(size, price) {
         name: currentItem.name,
         size: size,
         price: price,
-        dairy: true
+        dairy: currentItem.dairy
     };
     
     currentOrder.push(orderItem);
@@ -347,37 +349,45 @@ function startCheckout() {
 
 function showLactosePopup() {
     document.getElementById('lactose-popup').style.display = 'flex';
+    document.getElementById('milk-alternatives').style.display = 'none';
+    document.getElementById('lactose-cancel').style.display = 'block';
+    lactoseTolerant = true;
+    selectedMilk = null;
 }
 
 function closeLactosePopup() {
     document.getElementById('lactose-popup').style.display = 'none';
+    document.getElementById('milk-alternatives').style.display = 'none';
 }
 
-function handleLactoseResponse(isIntolerant) {
-    lactoseIntolerant = isIntolerant;
+function handleLactoseTolerant(isTolerant) {
+    lactoseTolerant = isTolerant;
     
-    const infoDiv = document.getElementById('lactose-info');
-    const continueBtn = document.getElementById('lactose-continue');
-    
-    if (isIntolerant) {
-        infoDiv.style.display = 'block';
-        
-        const alert = {
-            orderId: 'Temp-' + Date.now(),
-            timestamp: new Date().toISOString(),
-            items: currentOrder.map(i => i.name)
-        };
-        lactoseAlerts.push(alert);
-        localStorage.setItem('lactoseAlerts', JSON.stringify(lactoseAlerts));
+    if (isTolerant) {
+        showExtrasPopup();
+        closeLactosePopup();
     } else {
-        infoDiv.style.display = 'none';
+        document.getElementById('milk-alternatives').style.display = 'block';
     }
+}
+
+function selectMilkAlternative(milkType) {
+    selectedMilk = milkType === 'soya' ? 'Soya' : 'Almond';
     
-    continueBtn.style.display = 'block';
+    const alert = {
+        orderId: 'Temp-' + Date.now(),
+        milk: selectedMilk,
+        timestamp: new Date().toISOString(),
+        items: currentOrder.map(i => i.name)
+    };
+    milkAlerts.push(alert);
+    localStorage.setItem('milkAlerts', JSON.stringify(milkAlerts));
+    
+    closeLactosePopup();
+    showExtrasPopup();
 }
 
 function showExtrasPopup() {
-    closeLactosePopup();
     document.getElementById('extras-popup').style.display = 'flex';
     updateExtrasDisplay();
 }
@@ -550,7 +560,8 @@ function confirmOrder() {
         discount: discount,
         total: total,
         role: selectedRole,
-        lactoseIntolerant: lactoseIntolerant,
+        lactoseTolerant: lactoseTolerant,
+        selectedMilk: selectedMilk,
         deliveryMethod: deliveryMethod,
         deliveryLocation: deliveryLocation,
         timestamp: new Date().toISOString(),
@@ -559,16 +570,6 @@ function confirmOrder() {
     
     orders.push(order);
     localStorage.setItem('orders', JSON.stringify(orders));
-    
-    if (lactoseIntolerant) {
-        const alert = {
-            orderId: orderId,
-            timestamp: new Date().toISOString(),
-            items: currentOrder.map(i => i.name)
-        };
-        lactoseAlerts.push(alert);
-        localStorage.setItem('lactoseAlerts', JSON.stringify(lactoseAlerts));
-    }
     
     let message = `<strong>Order #${orderId}</strong><br>`;
     message += `Items:<br>`;
@@ -595,10 +596,11 @@ function confirmOrder() {
         message += `📍 Collection at counter`;
     }
     
-    if (lactoseIntolerant) {
-        document.getElementById('lactose-note').style.display = 'block';
+    if (selectedMilk) {
+        document.getElementById('milk-note').style.display = 'block';
+        document.getElementById('selected-milk').textContent = selectedMilk;
     } else {
-        document.getElementById('lactose-note').style.display = 'none';
+        document.getElementById('milk-note').style.display = 'none';
     }
     
     document.getElementById('confirmation-message').innerHTML = message;
@@ -615,7 +617,8 @@ function confirmOrder() {
     
     currentOrder = [];
     selectedExtras = [];
-    lactoseIntolerant = false;
+    selectedMilk = null;
+    lactoseTolerant = true;
     deliveryMethod = null;
     deliveryLocation = null;
     updateOrderDisplay();
