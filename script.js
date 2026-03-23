@@ -592,9 +592,9 @@ function confirmOrder() {
     message += `<strong>Total: P ${total.toFixed(2)}</strong><br><br>`;
     
     if (deliveryMethod === 'delivery') {
-        message += `📍 Delivery to: ${deliveryLocation}`;
+        message += ` Delivery to: ${deliveryLocation}`;
     } else {
-        message += `📍 Collection at counter`;
+        message += ` Collection at counter`;
     }
     
     if (selectedMilk) {
@@ -616,6 +616,7 @@ function confirmOrder() {
     
     document.getElementById('confirmation-popup').style.display = 'flex';
     
+    // Reset order and return to main menu
     currentOrder = [];
     selectedExtras = [];
     selectedMilk = null;
@@ -625,11 +626,28 @@ function confirmOrder() {
     updateOrderDisplay();
     disableCheckout();
     
+    // Reset menu to show categories
+    document.querySelectorAll('.category-items').forEach(category => {
+        category.classList.add('active');
+    });
+    document.querySelectorAll('.category-toggle').forEach(toggle => {
+        toggle.style.transform = 'rotate(0deg)';
+    });
+    
+    // If on mobile, close the menu overlay
+    const menu = document.getElementById('mainMenu');
+    const toggle = document.getElementById('menuToggle');
+    if (window.innerWidth <= 1024 && menu.classList.contains('show')) {
+        menu.classList.remove('show');
+        const icon = toggle.querySelector('i');
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+    }
+    
     setTimeout(() => {
         showRatingPopup();
     }, 2000);
 }
-
 function closeConfirmation() {
     document.getElementById('confirmation-popup').style.display = 'none';
 }
