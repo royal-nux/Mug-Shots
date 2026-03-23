@@ -648,6 +648,7 @@ function confirmOrder() {
         showRatingPopup();
     }, 2000);
 }
+
 function closeConfirmation() {
     document.getElementById('confirmation-popup').style.display = 'none';
 }
@@ -658,6 +659,7 @@ function showRatingPopup() {
 
 function closeRatingPopup() {
     document.getElementById('rating-popup').style.display = 'none';
+    resetMainMenu();
 }
 
 function setRating(rating) {
@@ -698,6 +700,28 @@ function submitRating() {
         star.classList.remove('active');
     });
     document.getElementById('selected-rating').textContent = '';
+    
+    resetMainMenu();
+}
+
+function resetMainMenu() {
+    // Expand all categories
+    document.querySelectorAll('.category-items').forEach(category => {
+        category.classList.add('active');
+    });
+    document.querySelectorAll('.category-toggle').forEach(toggle => {
+        toggle.style.transform = 'rotate(0deg)';
+    });
+    
+    // If on mobile, close the menu overlay
+    const menu = document.getElementById('mainMenu');
+    const toggle = document.getElementById('menuToggle');
+    if (window.innerWidth <= 1024 && menu.classList.contains('show')) {
+        menu.classList.remove('show');
+        const icon = toggle.querySelector('i');
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+    }
 }
 
 function showNotification(message) {
